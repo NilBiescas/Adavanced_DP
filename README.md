@@ -9,8 +9,8 @@ Combine *multi-level distillation* with *Elastic Weight Consolidation (EWC)* in 
 - Repetir els experiments cambiant per EWC
 
 
-Moment Matching for Multi-Source Domain Adaptation page, with paper and complete [dataset] (https://ai.bu.edu/M3SDA/)
+Moment Matching for Multi-Source Domain Adaptation page, with paper and complete [dataset](https://ai.bu.edu/M3SDA/)
 
-Subset of the data set that will be used: [DN4IL-dataset] (https://github.com/NeurAI-Lab/DN4IL-dataset)
+Subset of the data set that will be used: [DN4IL-dataset](https://github.com/NeurAI-Lab/DN4IL-dataset)
 
-For making enchmarks of models for domain adaptation: [DomainBed from facebookResearch] (https://github.com/facebookresearch/DomainBed)
+For making enchmarks of models for domain adaptation: [DomainBed from facebookResearch](https://github.com/facebookresearch/DomainBed)
