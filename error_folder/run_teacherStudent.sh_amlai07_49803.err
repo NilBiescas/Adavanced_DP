@@ -1,0 +1,23 @@
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Tracking run with wandb version 0.18.7
+wandb: W&B syncing is set to `offline` in this directory.  
+wandb: Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+  0%|          | 0/10 [00:00<?, ?it/s]
+  0%|          | 0/3562 [00:00<?, ?it/s][A/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/functional.py:3369: UserWarning: reduction: 'mean' divides the total loss by both the batch size and the support size.'batchmean' divides only by the batch size, and aligns with the KL div math definition.'mean' will be changed to behave the same as 'batchmean' in the next major release.
+  warnings.warn(
+  0%|          | 0/3562 [00:01<?, ?it/s]
+  0%|          | 0/10 [00:01<?, ?it/s]
+Traceback (most recent call last):
+  File "/fhome/amlai07/Adavanced_DP/main_teacher_student.py", line 41, in <module>
+    teacher, student = train_teacher_student(teacher,
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 172, in train_teacher_student
+    teacher_train_total_loss, student_train_total_loss, val_loss = TeacherStudent_train_epoch(teacher, student, train_dataloader, val_dataloder,
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 101, in TeacherStudent_train_epoch
+    distillation.backward()
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/_tensor.py", line 581, in backward
+    torch.autograd.backward(
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+RuntimeError: Trying to backward through the graph a second time (or directly access saved tensors after they have already been freed). Saved intermediate values of the graph are freed when you call .backward() or autograd.grad(). Specify retain_graph=True if you need to backward through the graph a second time or if you need to access saved tensors after calling backward.

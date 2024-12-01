@@ -1,0 +1,12 @@
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241201_124244-2z7t41dq
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run TeacherStudent_dn4il
+wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
+wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/2z7t41dq
+Traceback (most recent call last):
+  File "/fhome/amlai07/Adavanced_DP/main_teacher_student.py", line 87, in <module>
+    alpha_ewc_student=config["student"]["ewc_params"]["lambda"],  # Updated
+KeyError: 'ewc_params'

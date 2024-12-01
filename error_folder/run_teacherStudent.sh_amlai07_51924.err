@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/fhome/amlai07/Adavanced_DP/main_teacher_student.py", line 15, in <module>
+    with open(f"/fhome/amlai07/Adavanced_DP/Setups/{name_yaml}.yaml") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/fhome/amlai07/Adavanced_DP/Setups/TeacherStudent_dn4il_EWC_student_teacher_v3.yaml.yaml'

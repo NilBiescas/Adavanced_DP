@@ -1,0 +1,75 @@
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241123_160345-0op3ijcy
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run TeacherStudent_dn4il_EWC_student_only
+wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
+wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/0op3ijcy
+  0%|          | 0/10 [00:00<?, ?it/s]
+  0%|          | 0/966 [00:00<?, ?it/s][A/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/functional.py:3369: UserWarning: reduction: 'mean' divides the total loss by both the batch size and the support size.'batchmean' divides only by the batch size, and aligns with the KL div math definition.'mean' will be changed to behave the same as 'batchmean' in the next major release.
+  warnings.warn(
+
+  0%|          | 1/966 [00:01<23:33,  1.46s/it][A
+  0%|          | 2/966 [00:01<14:40,  1.09it/s][A
+  0%|          | 3/966 [00:02<10:57,  1.47it/s][A
+  0%|          | 4/966 [00:02<09:03,  1.77it/s][A
+  1%|          | 5/966 [00:03<08:01,  1.99it/s][A
+  1%|          | 6/966 [00:03<07:22,  2.17it/s][A
+  1%|          | 7/966 [00:03<07:00,  2.28it/s][A
+  1%|          | 8/966 [00:04<06:41,  2.39it/s][A
+  1%|          | 9/966 [00:04<06:23,  2.49it/s][A
+  1%|          | 10/966 [00:05<06:15,  2.55it/s][A
+  1%|          | 11/966 [00:05<06:12,  2.57it/s][A
+  1%|          | 12/966 [00:05<06:09,  2.58it/s][A
+  1%|▏         | 13/966 [00:06<06:04,  2.61it/s][A
+  1%|▏         | 14/966 [00:06<06:05,  2.60it/s][A
+  2%|▏         | 15/966 [00:06<06:02,  2.62it/s][A
+  2%|▏         | 16/966 [00:07<06:00,  2.64it/s][A
+  2%|▏         | 17/966 [00:07<05:58,  2.65it/s][A
+  2%|▏         | 18/966 [00:08<05:54,  2.67it/s][A
+  2%|▏         | 19/966 [00:08<05:53,  2.68it/s][A
+  2%|▏         | 20/966 [00:08<05:53,  2.68it/s][A
+  2%|▏         | 21/966 [00:09<05:59,  2.63it/s][A
+  2%|▏         | 22/966 [00:09<06:01,  2.61it/s][A
+  2%|▏         | 23/966 [00:09<06:03,  2.60it/s][A
+  2%|▏         | 24/966 [00:10<06:03,  2.59it/s][A
+  3%|▎         | 25/966 [00:10<06:04,  2.58it/s][A
+  3%|▎         | 26/966 [00:11<06:04,  2.58it/s][A
+  3%|▎         | 27/966 [00:11<05:55,  2.64it/s][A
+  3%|▎         | 28/966 [00:11<06:01,  2.60it/s][A
+  3%|▎         | 29/966 [00:12<06:01,  2.59it/s][A
+  3%|▎         | 30/966 [00:12<06:01,  2.59it/s][A
+  3%|▎         | 31/966 [00:13<06:03,  2.57it/s][A
+  3%|▎         | 32/966 [00:13<05:58,  2.60it/s][A
+  3%|▎         | 33/966 [00:13<05:59,  2.60it/s][A
+  4%|▎         | 34/966 [00:14<05:55,  2.62it/s][A
+  4%|▎         | 35/966 [00:14<05:58,  2.59it/s][A
+  4%|▎         | 36/966 [00:14<05:57,  2.60it/s][A
+  4%|▍         | 37/966 [00:15<05:54,  2.62it/s][A
+  4%|▍         | 38/966 [00:15<05:52,  2.63it/s][A
+  4%|▍         | 39/966 [00:16<05:53,  2.62it/s][A
+  4%|▍         | 40/966 [00:16<05:56,  2.60it/s][A
+  4%|▍         | 41/966 [00:16<05:57,  2.59it/s][A
+  4%|▍         | 42/966 [00:17<05:52,  2.62it/s][A
+  4%|▍         | 43/966 [00:17<05:49,  2.64it/s][A
+  5%|▍         | 44/966 [00:18<05:59,  2.56it/s][A
+  5%|▍         | 45/966 [00:18<05:59,  2.56it/s][A
+  5%|▍         | 46/966 [00:18<05:57,  2.58it/s][A
+  5%|▍         | 47/966 [00:19<05:56,  2.58it/s][A
+  5%|▍         | 48/966 [00:19<05:53,  2.60it/s][A
+  5%|▌         | 49/966 [00:19<05:49,  2.62it/s][A
+  5%|▌         | 50/966 [00:20<05:47,  2.63it/s][A
+  5%|▌         | 51/966 [00:20<05:51,  2.61it/s][A
+  5%|▌         | 52/966 [00:21<05:52,  2.60it/s][A
+  5%|▌         | 53/966 [00:21<05:48,  2.62it/s][A
+  6%|▌         | 54/966 [00:21<05:54,  2.58it/s][A
+  6%|▌         | 55/966 [00:22<05:53,  2.58it/s][A
+  6%|▌         | 56/966 [00:22<05:55,  2.56it/s][A
+  6%|▌         | 57/966 [00:23<05:56,  2.55it/s][A
+  6%|▌         | 58/966 [00:23<05:53,  2.57it/s][A
+  6%|▌         | 59/966 [00:23<05:55,  2.55it/s][A
+  6%|▌         | 60/966 [00:24<05:52,  2.57it/s][A
+  6%|▋         | 61/966 [00:24<05:48,  2.60it/s][A
+  6%|▋         | 62/966 [00:25<05:47,  2.60it/s][A
+  7%|▋         | 63/966 [00:25<05:44,  2.62it/s][Aslurmstepd: error: *** JOB 51451 ON etse-75-51 CANCELLED AT 2024-11-23T16:04:11 ***

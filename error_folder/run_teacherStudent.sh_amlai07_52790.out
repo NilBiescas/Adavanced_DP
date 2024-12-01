@@ -1,0 +1,16 @@
+Instantiating baseline_with_ewc...
+train_with_ewc: False
+gradient_stop: False
+Instantiating baseline_with_ewc...
+train_with_ewc: False
+gradient_stop: False
+DN4IL
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Not using mean importances
+Alpha EWC Student: 1
+Alpha EWC Teacher: 1
+Temperature 5
+Epoch 0
+Validation

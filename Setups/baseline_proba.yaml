@@ -1,0 +1,19 @@
+# Model architecture and parameters
+model_params: 
+  type: baseline
+  num_classes: 345
+
+# Dataset configuration
+dataset_params:
+  data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
+  image_size: 384  
+  batch_size: 24
+
+# Training configuration
+training_params:
+  optimizer: Adam
+  lr: 0.0001
+  criterion: CrossEntropy
+  epochs: 1
+
+

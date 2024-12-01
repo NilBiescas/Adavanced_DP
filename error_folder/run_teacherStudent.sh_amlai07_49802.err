@@ -1,0 +1,63 @@
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241116_104216-96g68npy
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run TeacherStudent_EWC
+wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
+wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/96g68npy
+  0%|          | 0/10 [00:00<?, ?it/s]
+  0%|          | 0/2375 [00:00<?, ?it/s][A  0%|          | 0/2375 [00:00<?, ?it/s]
+  0%|          | 0/10 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/fhome/amlai07/Adavanced_DP/main_teacher_student.py", line 41, in <module>
+    teacher, student = train_teacher_student(teacher,
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 172, in train_teacher_student
+    teacher_train_total_loss, student_train_total_loss, val_loss = TeacherStudent_train_epoch(teacher, student, train_dataloader, val_dataloder,
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 92, in TeacherStudent_train_epoch
+    student_output = student(data)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/export/fhome/amlai07/Adavanced_DP/src/Models/baseline_arch.py", line 36, in forward
+    return self.model(x)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torchvision/models/efficientnet.py", line 343, in forward
+    return self._forward_impl(x)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torchvision/models/efficientnet.py", line 333, in _forward_impl
+    x = self.features(x)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torchvision/models/efficientnet.py", line 164, in forward
+    result = self.block(input)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torchvision/ops/misc.py", line 260, in forward
+    return scale * input
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 10.75 GiB of which 6.69 MiB is free. Including non-PyTorch memory, this process has 10.74 GiB memory in use. Of the allocated memory 10.15 GiB is allocated by PyTorch, and 406.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

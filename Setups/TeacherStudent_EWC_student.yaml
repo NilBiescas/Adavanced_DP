@@ -1,0 +1,46 @@
+# Teacher Student config both with EWC
+
+
+# Dataset configuration
+dataset_params:
+  data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
+  image_size: 384  
+  batch_size: 8
+
+# Training configuration
+training_params:
+  epochs: 10
+
+
+teacher:
+  model_params: 
+    type: baseline_with_ewc
+    num_classes: 345
+    train_with_ewc: false
+
+  training_params:
+    optimizer: Adam
+    lr: 0.0001
+    criterion: CrossEntropy
+    epochs: 10
+
+  ewc_params:
+    lambda: 0.1
+    fisher_n: 100
+    ewc_epochs: 10
+
+student:
+  model_params: 
+    type: baseline_with_ewc
+    num_classes: 345
+    train_with_ewc: true
+
+  training_params:
+    optimizer: Adam
+    lr: 0.0001
+    criterion: CrossEntropy
+    epochs: 10
+  ewc_params:
+    lambda: 0.1
+    fisher_n: 100
+    ewc_epochs: 10

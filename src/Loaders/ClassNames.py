@@ -345,3 +345,16 @@ domainnet_classnames = {
     343: "zebra",
     344: "zigzag",
 }
+
+dn4il_classnames = {0: 'aircraft_carrier', 1: 'airplane', 2: 'apple', 3: 'asparagus', 4: 'axe', 5: 'banana', 6: 'bat', 7: 'bear', 8: 'bed', 9: 'bee', 10: 'bicycle', 11: 'bird', 12: 'birthday_cake', 13: 'bowtie', 14: 'bridge', 15: 'broccoli', 16: 'bus', 17: 'bush', 18: 'butterfly', 19: 'calendar', 20: 'camel', 21: 'carrot', 22: 'castle', 23: 'cello', 24: 'chair', 25: 'clarinet', 26: 'clock', 27: 'cloud', 28: 'couch', 29: 'cow', 30: 'crab', 31: 'cup', 32: 'dog', 33: 'dolphin', 34: 'dresser', 35: 'elephant', 36: 'eraser', 37: 'fish', 38: 'floor_lamp', 39: 'flying_saucer', 40: 'frying_pan', 41: 'guitar', 42: 'hamburger', 43: 'hammer', 44: 'helicopter', 45: 'horse', 46: 'hot_air_balloon', 47: 'house', 48: 'ice_cream', 49: 'jacket', 50: 'kangaroo', 51: 'keyboard', 52: 'lion', 53: 'lobster', 54: 'map', 55: 'marker', 56: 'mosquito', 57: 'motorbike', 58: 'mountain', 59: 'mouse', 60: 'mushroom', 61: 'ocean', 62: 'octopus', 63: 'onion', 64: 'panda', 65: 'pants', 66: 'pear', 67: 'pencil', 68: 'pickup_truck', 69: 'pizza', 70: 'rabbit', 71: 'raccoon', 72: 'river', 73: 'sandwich', 74: 'saw', 75: 'scissors', 76: 'scorpion', 77: 'screwdriver', 78: 'shark', 79: 'shorts', 80: 'skyscraper', 81: 'snail', 82: 'sock', 83: 'spider', 84: 'squirrel', 85: 'strawberry', 86: 'table', 87: 'teapot', 88: 'telephone', 89: 'television', 90: 'tiger', 91: 'train', 92: 'trombone', 93: 'violin', 94: 'watermelon', 95: 'whale', 96: 'windmill', 97: 'wine_bottle', 98: 'wine_glass', 99: 'zebra'}
+
+
+# To extract the class names of the DN4IL dataset, we can use the following code:
+#txt = "/fhome/amlai07/Adavanced_DP/Data/DN4IL/clipart_train.txt"
+#with open(txt, "r") as f:
+#    for idx, line in enumerate(f.readlines()):
+#        domain, class_mame, imgAndLabel = line.split("/")
+#        label = int(imgAndLabel.split(" ")[1])
+#        dn4il_classnames[int(label)] = class_mame
+
+# print(dn4il_classnames)

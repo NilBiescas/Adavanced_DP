@@ -3,18 +3,18 @@ import os
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+from torchvision.transforms.functional import InterpolationMode
 import cv2
 
 from enum import Enum
 from sklearn.model_selection import train_test_split
 
-from ClassNames import domainnet_classnames
+from src.Loaders.ClassNames import domainnet_classnames
 
 
 """
 TODO:
 - Esollir el primer domini que sutilitza (Podria ser el real?)
-- Data augmentation
 """
 class partition(Enum):
     TRAIN = 'train'
@@ -23,7 +23,7 @@ class partition(Enum):
 
 
 class DomainNet(Dataset):
-    def __init__(self, root, partition, image_size=224, validation_size=0.15, random_state=42):
+    def __init__(self, root, partition, image_size=384, validation_size=0.15, random_state=42):
         self.root = root
         self.partition = partition
 
@@ -53,7 +53,7 @@ class DomainNet(Dataset):
                 labels = [int(line.split(' ')[1]) for line in lines]
 
                 # Split the data into training and validation
-                X_train, X_val, y_train, y_val = train_test_split(paths, labels, test_size=validation_size, random_state=42)
+                X_train, X_val, y_train, y_val = train_test_split(paths, labels, test_size=validation_size, random_state=random_state)
                 
                 if partition == partition.TRAIN:
                     self.data[domain]["paths"] = X_train
@@ -64,9 +64,12 @@ class DomainNet(Dataset):
 
             self.transform = transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Resize((image_size, image_size)),
                 transforms.RandomHorizontalFlip(),
+                transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
+                transforms.CenterCrop(image_size),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
+
 
         else:
             # Iterate over the domains and load the data
@@ -80,8 +83,10 @@ class DomainNet(Dataset):
                 self.data[domain]["labels"] = [int(lines[0].split(' ')[1]) for line in lines]
 
             self.transform = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Resize((image_size, image_size)),
+                    transforms.ToTensor(),
+                    transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
+                    transforms.CenterCrop(image_size),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
 
     @property
@@ -138,13 +143,25 @@ class DomainNet(Dataset):
         return img, torch.tensor(label)
 
     
+def get_loaders(path, image_size=384, batch_size=32):
+    train_dataset = DomainNet(path, partition.TRAIN, image_size=image_size)
+    val_dataset = DomainNet(path, partition.VALIDATION, image_size=image_size)
+    test_dataset = DomainNet(path, partition.TEST, image_size=image_size)
+
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, test_loader
+
 
 if __name__ == '__main__':
     dataset = DomainNet(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', partition=partition.TRAIN)
+    print(len(dataset))
     print(dataset.current_domain)
     print(dataset.num_domains)
     print(dataset.num_classes)
-    #print(dataset[0])
+    print(dataset[0])
     dataset.select_domain(1)
     print(dataset.current_domain)
     #print(dataset[0])

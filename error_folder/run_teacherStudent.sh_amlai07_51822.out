@@ -1,0 +1,12 @@
+Instantiating baseline_with_ewc...
+train_with_ewc: False
+Instantiating baseline_with_ewc...
+train_with_ewc: False
+DN4IL
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Domains: ['real', 'clipart', 'infograph', 'painting', 'quickdraw', 'sketch']
+Using mean importances
+WARNING: This behaviour does not work as expected
+Epoch 0
+Validation

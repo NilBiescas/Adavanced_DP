@@ -1,0 +1,41 @@
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241120_201711-y7texs1g
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run baseline_proba
+wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
+wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/y7texs1g
+  0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/1 [00:00<?, ?it/s][A
+100%|██████████| 1/1 [00:00<00:00,  1.20it/s][A100%|██████████| 1/1 [00:00<00:00,  1.20it/s]
+
+  0%|          | 0/1 [00:00<?, ?it/s][A
+100%|██████████| 1/1 [00:00<00:00,  6.44it/s][A100%|██████████| 1/1 [00:00<00:00,  6.40it/s]
+100%|██████████| 1/1 [00:01<00:00,  1.36s/it]100%|██████████| 1/1 [00:01<00:00,  1.36s/it]
+Traceback (most recent call last):
+  File "/fhome/amlai07/Adavanced_DP/main.py", line 45, in <module>
+    model = baseline_train(model, train_loader, val_loader, test_loader, optimizer, criterion, device, config["training_params"]["epochs"])
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 182, in baseline_train
+    training_plot(metrics, save_path)
+  File "/export/fhome/amlai07/Adavanced_DP/src/utils/plot_utils.py", line 132, in training_plot
+    plt.savefig(save_path)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/pyplot.py", line 1228, in savefig
+    res = fig.savefig(*args, **kwargs)  # type: ignore[func-returns-value]
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/figure.py", line 3395, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/backend_bases.py", line 2204, in print_figure
+    result = print_method(
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/backend_bases.py", line 2054, in <lambda>
+    print_method = functools.wraps(meth)(lambda *args, **kwargs: meth(
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/backends/backend_agg.py", line 496, in print_png
+    self._print_pil(filename_or_obj, "png", pil_kwargs, metadata)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/backends/backend_agg.py", line 445, in _print_pil
+    mpl.image.imsave(
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/matplotlib/image.py", line 1676, in imsave
+    image.save(fname, **pil_kwargs)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/PIL/Image.py", line 2605, in save
+    save_handler(self, fp, filename)
+  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/PIL/PngImagePlugin.py", line 1371, in _save
+    fp.write(_MAGIC)
+AttributeError: 'NoneType' object has no attribute 'write'

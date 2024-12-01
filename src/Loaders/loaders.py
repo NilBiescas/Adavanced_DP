@@ -86,6 +86,7 @@ for ..in
 # 2 Experiment: Teacher and Student, teacher with EWC and student with EWC
 # 3 Experiment: Teacher and Student, teacher without EWC and student with EWC
 # 4 Experiment: Teacher and Student, teacher without EWC and student without EWC
+# 5 Experiment: Student with EWC
 
-# 5 Experiment: DANN 
-# 6 Experiment: Task arithmetic 
+# 6 Experiment: DANN 
+# 7 Experiment: Task arithmetic 

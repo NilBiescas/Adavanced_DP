@@ -1,0 +1,7 @@
+Instantiating baseline_with_ewc...
+Instantiating baseline_with_ewc...
+Epoch 0
+[1;34mwandb[0m:
+[1;34mwandb[0m: You can sync this run to the cloud by running:
+[1;34mwandb[0m: [1mwandb sync /export/fhome/amlai07/Adavanced_DP/wandb/offline-run-20241116_104249-oezf6k82[0m
+[1;34mwandb[0m: Find logs at: [1;35m../../../export/fhome/amlai07/Adavanced_DP/wandb/offline-run-20241116_104249-oezf6k82/logs[0m

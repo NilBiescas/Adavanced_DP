@@ -1,0 +1,46 @@
+# Teacher Student config only with EWC on student
+
+
+# Dataset configuration
+dataset_params:
+  dataset: DN4IL
+  data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
+  path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
+  image_size: 384  
+  batch_size: 11
+
+# Training configuration
+training_params:
+  scheduler:
+    name: StepLR
+    step_size: 4
+    gamma: 0.5
+  criterion: CrossEntropy
+  epochs: 10
+  early_stopping_patience: 4
+
+
+teacher:
+  model_params: 
+    type: baseline_with_ewc
+    num_classes: 100
+    train_with_ewc: false
+    gradient_stop: true
+
+  training_params:
+    optimizer: AdamW
+    lr: 0.0001
+
+student:
+  model_params: 
+    type: baseline_with_ewc
+    num_classes: 100
+    train_with_ewc: true
+    gradient_stop: false
+
+  training_params:
+    optimizer: AdamW
+    lr: 0.0001
+
+  ewc_params:
+    lambda: 4
