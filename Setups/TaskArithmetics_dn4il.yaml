@@ -9,7 +9,8 @@ dataset_params:
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  batch_size: 25
+  # batch_size: 25 # Batch size used for training
+  batch_size: 250 # Batch size used for evaluation
 
 # Training configuration
 training_params:

@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/fhome/amlai07/Adavanced_DP/main.py", line 26, in <module>
-    raise ValueError(f'{config["dataset_params"]["dataset"]} Dataset not supported')
-ValueError: D4IL Dataset not supported

@@ -1,29 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241123_124828-bzd6uvfd
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run TeacherStudent_dn4il_EWC_student_only
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/bzd6uvfd
-  0%|          | 0/10 [00:00<?, ?it/s]
-  0%|          | 0/652 [00:00<?, ?it/s][A/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/functional.py:3369: UserWarning: reduction: 'mean' divides the total loss by both the batch size and the support size.'batchmean' divides only by the batch size, and aligns with the KL div math definition.'mean' will be changed to behave the same as 'batchmean' in the next major release.
-  warnings.warn(
-
-  0%|          | 1/652 [00:02<21:44,  2.00s/it][A
-  0%|          | 2/652 [00:02<13:19,  1.23s/it][A
-  0%|          | 3/652 [00:03<10:08,  1.07it/s][A
-  1%|          | 4/652 [00:03<08:39,  1.25it/s][A
-  1%|          | 5/652 [00:04<07:48,  1.38it/s][A
-  1%|          | 6/652 [00:05<07:17,  1.48it/s][A
-  1%|          | 7/652 [00:05<06:57,  1.55it/s][A
-  1%|          | 8/652 [00:06<06:39,  1.61it/s][A
-  1%|▏         | 9/652 [00:06<06:33,  1.64it/s][A
-  2%|▏         | 10/652 [00:07<06:25,  1.67it/s][A
-  2%|▏         | 11/652 [00:07<06:20,  1.68it/s][A
-  2%|▏         | 12/652 [00:08<06:18,  1.69it/s][A
-  2%|▏         | 13/652 [00:09<06:16,  1.70it/s][A
-  2%|▏         | 14/652 [00:09<06:17,  1.69it/s][A
-  2%|▏         | 15/652 [00:10<06:17,  1.69it/s][A
-  2%|▏         | 16/652 [00:10<06:19,  1.68it/s][A
-  3%|▎         | 17/652 [00:11<06:18,  1.68it/s][A/var/spool/slurmd/job51419/slurm_script: línea 11: 2248941 Terminado (killed)      python3 /fhome/amlai07/Adavanced_DP/main_teacher_student.py $1

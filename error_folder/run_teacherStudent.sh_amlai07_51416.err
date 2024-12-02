@@ -1,54 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241123_124657-d217abnu
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run TeacherStudent_dn4il_EWC_student_only
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/d217abnu
-  0%|          | 0/10 [00:00<?, ?it/s]
-  0%|          | 0/978 [00:00<?, ?it/s][A/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/nn/functional.py:3369: UserWarning: reduction: 'mean' divides the total loss by both the batch size and the support size.'batchmean' divides only by the batch size, and aligns with the KL div math definition.'mean' will be changed to behave the same as 'batchmean' in the next major release.
-  warnings.warn(
-
-  0%|          | 1/978 [00:01<24:04,  1.48s/it][A
-  0%|          | 2/978 [00:01<14:49,  1.10it/s][A
-  0%|          | 3/978 [00:02<10:58,  1.48it/s][A
-  0%|          | 4/978 [00:02<09:20,  1.74it/s][A
-  1%|          | 5/978 [00:03<08:17,  1.96it/s][A
-  1%|          | 6/978 [00:03<07:37,  2.12it/s][A
-  1%|          | 7/978 [00:04<07:22,  2.19it/s][A
-  1%|          | 8/978 [00:04<06:57,  2.32it/s][A
-  1%|          | 9/978 [00:04<06:51,  2.36it/s][A
-  1%|          | 10/978 [00:05<06:44,  2.39it/s][A
-  1%|          | 11/978 [00:05<06:37,  2.43it/s][A
-  1%|          | 12/978 [00:06<06:33,  2.45it/s][A
-  1%|▏         | 13/978 [00:06<06:27,  2.49it/s][A
-  1%|▏         | 14/978 [00:06<06:26,  2.50it/s][A
-  2%|▏         | 15/978 [00:07<06:25,  2.50it/s][A
-  2%|▏         | 16/978 [00:07<06:23,  2.51it/s][A
-  2%|▏         | 17/978 [00:07<06:19,  2.54it/s][A
-  2%|▏         | 18/978 [00:08<06:15,  2.56it/s][A
-  2%|▏         | 19/978 [00:08<06:19,  2.53it/s][A
-  2%|▏         | 20/978 [00:09<06:16,  2.54it/s][A
-  2%|▏         | 21/978 [00:09<06:17,  2.54it/s][A
-  2%|▏         | 22/978 [00:09<06:19,  2.52it/s][A
-  2%|▏         | 23/978 [00:10<06:18,  2.52it/s][A
-  2%|▏         | 24/978 [00:10<06:26,  2.47it/s][A
-  3%|▎         | 25/978 [00:11<06:21,  2.50it/s][A
-  3%|▎         | 26/978 [00:11<06:20,  2.50it/s][A
-  3%|▎         | 27/978 [00:11<06:20,  2.50it/s][A
-  3%|▎         | 28/978 [00:12<06:20,  2.50it/s][A
-  3%|▎         | 29/978 [00:12<06:17,  2.52it/s][A
-  3%|▎         | 30/978 [00:13<06:16,  2.52it/s][A
-  3%|▎         | 31/978 [00:13<06:12,  2.54it/s][A
-  3%|▎         | 32/978 [00:13<06:11,  2.55it/s][A
-  3%|▎         | 33/978 [00:14<06:14,  2.53it/s][A
-  3%|▎         | 34/978 [00:14<06:13,  2.52it/s][A
-  4%|▎         | 35/978 [00:15<06:16,  2.50it/s][A
-  4%|▎         | 36/978 [00:15<06:21,  2.47it/s][A
-  4%|▍         | 37/978 [00:15<06:23,  2.45it/s][A
-  4%|▍         | 38/978 [00:16<06:26,  2.43it/s][A
-  4%|▍         | 39/978 [00:16<06:19,  2.48it/s][A
-  4%|▍         | 40/978 [00:17<06:17,  2.49it/s][A
-  4%|▍         | 41/978 [00:17<06:13,  2.51it/s][A
-  4%|▍         | 42/978 [00:17<06:11,  2.52it/s][A/var/spool/slurmd/job51416/slurm_script: línea 11: 2248173 Terminado (killed)      python3 /fhome/amlai07/Adavanced_DP/main_teacher_student.py $1

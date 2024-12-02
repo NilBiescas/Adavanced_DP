@@ -1,27 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241123_125513-98wv0l1y
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run baseline_dn4il
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/98wv0l1y
-  0%|          | 0/10 [00:00<?, ?it/s]  0%|          | 0/10 [00:00<?, ?it/s]
-Traceback (most recent call last):
-  File "/fhome/amlai07/Adavanced_DP/main.py", line 58, in <module>
-    model = baseline_train(model, train_loader, val_loader, test_loader, optimizer, criterion, device, config["training_params"]["epochs"], early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
-  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 167, in baseline_train
-    train_loss, val_loss = baseline_train_epoch(model, train_dataloader, val_dataloder, optimizer, criterion, device, epoch)
-  File "/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py", line 45, in baseline_train_epoch
-    for i, data in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
-  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 532, in __len__
-    return len(self._index_sampler)
-  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/utils/data/sampler.py", line 365, in __len__
-    return (len(self.sampler) + self.batch_size - 1) // self.batch_size  # type: ignore[arg-type]
-  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/utils/data/sampler.py", line 203, in __len__
-    return self.num_samples
-  File "/fhome/amlai07/miniconda3/envs/AdvancedDP/lib/python3.10/site-packages/torch/utils/data/sampler.py", line 172, in num_samples
-    return len(self.data_source)
-  File "/export/fhome/amlai07/Adavanced_DP/src/Loaders/DataLoaders_DN4IL.py", line 135, in __len__
-    return len(self.data[self.Domain2Use]["labels"])
-KeyError: 'real'

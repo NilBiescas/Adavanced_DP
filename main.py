@@ -5,7 +5,7 @@ import wandb
 import torch
 
 from src.Models import define_network
-from src.utils.train_loops import baseline_train, Task_Arithmetics_Train
+from Adavanced_DP.src.train_loops import baseline_train, Task_Arithmetics_Train
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -63,7 +63,7 @@ if not os.path.exists(f"/fhome/amlai07/Adavanced_DP/Runs/{name_yaml}"):
 
 model.name = name_yaml
 
-if ("Approach" not in config["training_params"].keys()) or ("Baseline" == config["training_params"]["Approach"]):
+if ("Approach" not in config["training_params"]) or ("Baseline" == config["training_params"]["Approach"]):
     print("Baseline Approach (Standard Finetuning)")
     model = baseline_train(model, train_loader, val_loader, test_loader, optimizer, criterion, device, config["training_params"]["epochs"], early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
 elif "TaskArithmetics" == config["training_params"]["Approach"]:

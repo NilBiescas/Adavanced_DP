@@ -1,88 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241124_194827-n7a6b3ym
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run TaskArithmetics_dn4il
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/n7a6b3ym
-/export/fhome/amlai07/Adavanced_DP/src/utils/train_loops.py:398: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
-  model = torch.load(f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/pretrained_model.pt")
-  0%|          | 0/10 [00:00<?, ?it/s]
-  0%|          | 0/425 [00:00<?, ?it/s][A
-  0%|          | 1/425 [00:01<08:47,  1.24s/it][A
-  0%|          | 2/425 [00:02<10:02,  1.42s/it][A
-  1%|          | 3/425 [00:03<07:33,  1.08s/it][A
-  1%|          | 4/425 [00:04<06:25,  1.09it/s][A
-  1%|          | 5/425 [00:04<05:48,  1.21it/s][A
-  1%|▏         | 6/425 [00:05<05:23,  1.30it/s][A
-  2%|▏         | 7/425 [00:06<05:11,  1.34it/s][A
-  2%|▏         | 8/425 [00:06<05:01,  1.38it/s][A
-  2%|▏         | 9/425 [00:07<04:50,  1.43it/s][A
-  2%|▏         | 10/425 [00:08<04:43,  1.46it/s][A
-  3%|▎         | 11/425 [00:08<04:41,  1.47it/s][A
-  3%|▎         | 12/425 [00:09<04:43,  1.46it/s][A
-  3%|▎         | 13/425 [00:10<04:41,  1.47it/s][A
-  3%|▎         | 14/425 [00:10<04:38,  1.48it/s][A
-  4%|▎         | 15/425 [00:11<04:37,  1.48it/s][A
-  4%|▍         | 16/425 [00:12<04:37,  1.48it/s][A
-  4%|▍         | 17/425 [00:12<04:35,  1.48it/s][A
-  4%|▍         | 18/425 [00:13<04:35,  1.48it/s][A
-  4%|▍         | 19/425 [00:14<04:36,  1.47it/s][A
-  5%|▍         | 20/425 [00:14<04:36,  1.47it/s][A
-  5%|▍         | 21/425 [00:15<04:36,  1.46it/s][A
-  5%|▌         | 22/425 [00:16<04:40,  1.43it/s][A
-  5%|▌         | 23/425 [00:17<04:40,  1.43it/s][A
-  6%|▌         | 24/425 [00:17<04:35,  1.46it/s][A
-  6%|▌         | 25/425 [00:18<04:35,  1.45it/s][A
-  6%|▌         | 26/425 [00:19<04:29,  1.48it/s][A
-  6%|▋         | 27/425 [00:19<04:32,  1.46it/s][A
-  7%|▋         | 28/425 [00:20<04:28,  1.48it/s][A
-  7%|▋         | 29/425 [00:21<04:30,  1.46it/s][A
-  7%|▋         | 30/425 [00:21<04:31,  1.46it/s][A
-  7%|▋         | 31/425 [00:22<04:32,  1.44it/s][A
-  8%|▊         | 32/425 [00:23<04:29,  1.46it/s][A
-  8%|▊         | 33/425 [00:23<04:27,  1.47it/s][A
-  8%|▊         | 34/425 [00:24<04:28,  1.45it/s][A
-  8%|▊         | 35/425 [00:25<04:27,  1.46it/s][A
-  8%|▊         | 36/425 [00:25<04:24,  1.47it/s][A
-  9%|▊         | 37/425 [00:26<04:24,  1.47it/s][A
-  9%|▉         | 38/425 [00:27<04:21,  1.48it/s][A
-  9%|▉         | 39/425 [00:27<04:21,  1.48it/s][A
-  9%|▉         | 40/425 [00:28<04:23,  1.46it/s][A
- 10%|▉         | 41/425 [00:29<04:22,  1.46it/s][A
- 10%|▉         | 42/425 [00:30<04:27,  1.43it/s][A
- 10%|█         | 43/425 [00:30<04:30,  1.41it/s][A
- 10%|█         | 44/425 [00:31<04:23,  1.45it/s][A
- 11%|█         | 45/425 [00:32<04:20,  1.46it/s][A
- 11%|█         | 46/425 [00:32<04:17,  1.47it/s][A
- 11%|█         | 47/425 [00:33<04:19,  1.46it/s][A
- 11%|█▏        | 48/425 [00:34<04:18,  1.46it/s][A
- 12%|█▏        | 49/425 [00:34<04:18,  1.46it/s][A
- 12%|█▏        | 50/425 [00:35<04:14,  1.47it/s][A
- 12%|█▏        | 51/425 [00:36<04:14,  1.47it/s][A
- 12%|█▏        | 52/425 [00:36<04:14,  1.46it/s][A
- 12%|█▏        | 53/425 [00:37<04:13,  1.47it/s][A
- 13%|█▎        | 54/425 [00:38<04:14,  1.46it/s][A
- 13%|█▎        | 55/425 [00:38<04:15,  1.45it/s][A
- 13%|█▎        | 56/425 [00:39<04:14,  1.45it/s][A
- 13%|█▎        | 57/425 [00:40<04:11,  1.46it/s][A
- 14%|█▎        | 58/425 [00:40<04:10,  1.46it/s][A
- 14%|█▍        | 59/425 [00:41<04:10,  1.46it/s][A
- 14%|█▍        | 60/425 [00:42<04:09,  1.46it/s][A
- 14%|█▍        | 61/425 [00:43<04:11,  1.45it/s][A
- 15%|█▍        | 62/425 [00:43<04:13,  1.43it/s][A
- 15%|█▍        | 63/425 [00:44<04:11,  1.44it/s][A
- 15%|█▌        | 64/425 [00:45<04:07,  1.46it/s][A
- 15%|█▌        | 65/425 [00:45<04:04,  1.47it/s][A
- 16%|█▌        | 66/425 [00:46<04:04,  1.47it/s][A
- 16%|█▌        | 67/425 [00:47<04:06,  1.45it/s][A
- 16%|█▌        | 68/425 [00:47<04:05,  1.45it/s][A
- 16%|█▌        | 69/425 [00:48<04:03,  1.46it/s][A
- 16%|█▋        | 70/425 [00:49<04:03,  1.46it/s][A
- 17%|█▋        | 71/425 [00:49<04:03,  1.45it/s][A
- 17%|█▋        | 72/425 [00:50<04:02,  1.46it/s][A
- 17%|█▋        | 73/425 [00:51<04:00,  1.46it/s][A
- 17%|█▋        | 74/425 [00:51<03:58,  1.47it/s][A
- 18%|█▊        | 75/425 [00:52<03:55,  1.48it/s][A
- 18%|█▊        | 76/425 [00:53<03:55,  1.48it/s][A/var/spool/slurmd/job51671/slurm_script: línea 11: 3607232 Terminado (killed)      python3 /fhome/amlai07/Adavanced_DP/main.py $1

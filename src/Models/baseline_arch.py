@@ -15,8 +15,6 @@ class baseline(nn.Module):
         )
 
     def forward(self, x):
-        if self.gradient_stop:
-            return self.model(x).detach()
         return self.model(x)
 
 
@@ -40,8 +38,6 @@ class baseline_with_ewc(nn.Module):
         
     def forward(self, x): # 
         #Podriem fer return self.model(x).detach() per tal de no calcular gradients pels casos amb gradient_stop pero bueno
-        if self.gradient_stop:
-            return self.model(x).detach()
         return self.model(x)
 
     

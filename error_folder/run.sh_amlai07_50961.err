@@ -1,184 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241120_201740-i240gamv
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run baseline_proba
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/i240gamv
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  1.19it/s][A100%|██████████| 1/1 [00:00<00:00,  1.19it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  6.17it/s][A100%|██████████| 1/1 [00:00<00:00,  6.13it/s]
-100%|██████████| 1/1 [00:01<00:00,  1.37s/it]100%|██████████| 1/1 [00:01<00:00,  1.37s/it]
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  2.10it/s][A100%|██████████| 1/1 [00:00<00:00,  2.10it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  4.85it/s][A100%|██████████| 1/1 [00:00<00:00,  4.83it/s]
-100%|██████████| 1/1 [00:01<00:00,  1.21s/it]100%|██████████| 1/1 [00:01<00:00,  1.21s/it]
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  3.17it/s][A100%|██████████| 1/1 [00:00<00:00,  3.16it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  6.64it/s][A100%|██████████| 1/1 [00:00<00:00,  6.60it/s]
-100%|██████████| 1/1 [00:00<00:00,  1.25it/s]100%|██████████| 1/1 [00:00<00:00,  1.25it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  3.85it/s][A100%|██████████| 1/1 [00:00<00:00,  3.83it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  9.09it/s][A100%|██████████| 1/1 [00:00<00:00,  8.99it/s]
-100%|██████████| 1/1 [00:00<00:00,  1.67it/s]100%|██████████| 1/1 [00:00<00:00,  1.67it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  3.34it/s][A100%|██████████| 1/1 [00:00<00:00,  3.33it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  7.19it/s][A100%|██████████| 1/1 [00:00<00:00,  7.12it/s]
-100%|██████████| 1/1 [00:00<00:00,  1.37it/s]100%|██████████| 1/1 [00:00<00:00,  1.37it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  3.49it/s][A100%|██████████| 1/1 [00:00<00:00,  3.48it/s]
-
-  0%|          | 0/1 [00:00<?, ?it/s][A
-100%|██████████| 1/1 [00:00<00:00,  6.08it/s][A100%|██████████| 1/1 [00:00<00:00,  6.03it/s]
-100%|██████████| 1/1 [00:00<00:00,  1.31it/s]100%|██████████| 1/1 [00:00<00:00,  1.31it/s]
-wandb:                                                                                
-wandb: 
-wandb: Run history:
-wandb:          Trained_domains ▁▂▂▄▄▄▅▅▅▅▇▇▇▇▇██████
-wandb:                    epoch ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-wandb:    test_top1_acc_clipart ▁
-wandb:  test_top1_acc_infograph ▁
-wandb:   test_top1_acc_painting ▁
-wandb:  test_top1_acc_quickdraw ▁
-wandb:       test_top1_acc_real ▁
-wandb:     test_top1_acc_sketch ▁
-wandb:    test_top5_acc_clipart ▁
-wandb:  test_top5_acc_infograph ▁
-wandb:   test_top5_acc_painting ▁
-wandb:  test_top5_acc_quickdraw ▁
-wandb:       test_top5_acc_real ▁
-wandb:     test_top5_acc_sketch ▁
-wandb:    top1_acc_prev_clipart ▁▁▁▁▁▁
-wandb:  top1_acc_prev_infograph ▁▁▁▁▁
-wandb:   top1_acc_prev_painting ▁▁▁▁
-wandb:  top1_acc_prev_quickdraw ▁▁▁
-wandb:       top1_acc_prev_real █▁
-wandb:     top1_acc_prev_sketch ▁
-wandb:    top5_acc_prev_clipart ▁▁▁▁▁▁
-wandb:  top5_acc_prev_infograph ▁▁▁▁▁
-wandb:   top5_acc_prev_painting ▁▁▁▁
-wandb:  top5_acc_prev_quickdraw █▁▁
-wandb:       top5_acc_prev_real █▁
-wandb:     top5_acc_prev_sketch ▁
-wandb:       train_loss_clipart ▁
-wandb:     train_loss_infograph ▁
-wandb:      train_loss_painting ▁
-wandb:     train_loss_quickdraw ▁
-wandb:          train_loss_real ▁
-wandb:        train_loss_sketch ▁
-wandb:   train_top1_acc_clipart ▁
-wandb: train_top1_acc_infograph ▁
-wandb:  train_top1_acc_painting ▁
-wandb: train_top1_acc_quickdraw ▁
-wandb:      train_top1_acc_real ▁
-wandb:    train_top1_acc_sketch ▁
-wandb:   train_top5_acc_clipart ▁
-wandb: train_top5_acc_infograph ▁
-wandb:  train_top5_acc_painting ▁
-wandb: train_top5_acc_quickdraw ▁
-wandb:      train_top5_acc_real ▁
-wandb:    train_top5_acc_sketch ▁
-wandb:         val_loss_clipart ▁
-wandb:       val_loss_infograph ▁
-wandb:        val_loss_painting ▁
-wandb:       val_loss_quickdraw ▁
-wandb:            val_loss_real ▁
-wandb:          val_loss_sketch ▁
-wandb:     val_top1_acc_clipart ▁
-wandb:   val_top1_acc_infograph ▁
-wandb:    val_top1_acc_painting ▁
-wandb:   val_top1_acc_quickdraw ▁
-wandb:        val_top1_acc_real ▁
-wandb:      val_top1_acc_sketch ▁
-wandb:     val_top5_acc_clipart ▁
-wandb:   val_top5_acc_infograph ▁
-wandb:    val_top5_acc_painting ▁
-wandb:   val_top5_acc_quickdraw ▁
-wandb:        val_top5_acc_real ▁
-wandb:      val_top5_acc_sketch ▁
-wandb: 
-wandb: Run summary:
-wandb:          Trained_domains 6
-wandb:                    epoch 0
-wandb:    test_top1_acc_clipart 0
-wandb:  test_top1_acc_infograph 0
-wandb:   test_top1_acc_painting 0
-wandb:  test_top1_acc_quickdraw 0
-wandb:       test_top1_acc_real 0
-wandb:     test_top1_acc_sketch 0
-wandb:    test_top5_acc_clipart 0
-wandb:  test_top5_acc_infograph 0
-wandb:   test_top5_acc_painting 0
-wandb:  test_top5_acc_quickdraw 0
-wandb:       test_top5_acc_real 0
-wandb:     test_top5_acc_sketch 0
-wandb:    top1_acc_prev_clipart 0
-wandb:  top1_acc_prev_infograph 0
-wandb:   top1_acc_prev_painting 0
-wandb:  top1_acc_prev_quickdraw 0
-wandb:       top1_acc_prev_real 0
-wandb:     top1_acc_prev_sketch 0
-wandb:    top5_acc_prev_clipart 0
-wandb:  top5_acc_prev_infograph 0
-wandb:   top5_acc_prev_painting 0
-wandb:  top5_acc_prev_quickdraw 0
-wandb:       top5_acc_prev_real 10
-wandb:     top5_acc_prev_sketch 0
-wandb:       train_loss_clipart 5.88059
-wandb:     train_loss_infograph 5.80091
-wandb:      train_loss_painting 5.8903
-wandb:     train_loss_quickdraw 5.80952
-wandb:          train_loss_real 5.85684
-wandb:        train_loss_sketch 5.8329
-wandb:   train_top1_acc_clipart 10
-wandb: train_top1_acc_infograph 30.0
-wandb:  train_top1_acc_painting 0
-wandb: train_top1_acc_quickdraw 20
-wandb:      train_top1_acc_real 0
-wandb:    train_top1_acc_sketch 0
-wandb:   train_top5_acc_clipart 20
-wandb: train_top5_acc_infograph 60.0
-wandb:  train_top5_acc_painting 0
-wandb: train_top5_acc_quickdraw 20
-wandb:      train_top5_acc_real 10
-wandb:    train_top5_acc_sketch 0
-wandb:         val_loss_clipart 5.87645
-wandb:       val_loss_infograph 5.8444
-wandb:        val_loss_painting 5.84955
-wandb:       val_loss_quickdraw 5.85418
-wandb:            val_loss_real 5.84821
-wandb:          val_loss_sketch 5.89175
-wandb:     val_top1_acc_clipart 0
-wandb:   val_top1_acc_infograph 0
-wandb:    val_top1_acc_painting 0
-wandb:   val_top1_acc_quickdraw 0
-wandb:        val_top1_acc_real 10
-wandb:      val_top1_acc_sketch 0
-wandb:     val_top5_acc_clipart 0
-wandb:   val_top5_acc_infograph 0
-wandb:    val_top5_acc_painting 0
-wandb:   val_top5_acc_quickdraw 0
-wandb:        val_top5_acc_real 10
-wandb:      val_top5_acc_sketch 0
-wandb: 
-wandb: 🚀 View run baseline_proba at: https://wandb.ai/joanlafuente/Advanced_DP/runs/i240gamv
-wandb: ⭐️ View project at: https://wandb.ai/joanlafuente/Advanced_DP
-wandb: Synced 7 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./wandb/run-20241120_201740-i240gamv/logs

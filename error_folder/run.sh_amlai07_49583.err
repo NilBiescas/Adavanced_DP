@@ -1,9 +1,0 @@
-wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: joanlafuente. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.7
-wandb: Run data is saved locally in /export/fhome/amlai07/Adavanced_DP/wandb/run-20241114_220556-r9yopkn4
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run baseline
-wandb: ⭐️ View project at https://wandb.ai/joanlafuente/Advanced_DP
-wandb: 🚀 View run at https://wandb.ai/joanlafuente/Advanced_DP/runs/r9yopkn4
-  0%|          | 0/10 [00:00<?, ?it/s]/var/spool/slurmd/job49583/slurm_script: línea 11: 2011044 Terminado (killed)      python3 /fhome/amlai07/Adavanced_DP/main.py $1
