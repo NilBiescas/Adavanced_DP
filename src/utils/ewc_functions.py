@@ -1,15 +1,20 @@
 import torch
 import torch.nn as nn
 
-def compute_loss(model, old_model_state_dict, prediction, target, importances, criterion=torch.nn.CrossEntropyLoss(), alpha=1.0):
+def compute_loss(model, old_model_state_dict, prediction, target, importances, criterion=torch.nn.CrossEntropyLoss(), alpha=1.0, distillation_loss=None):
     loss = criterion(prediction, target)    
     
     regularitzation_loss = 0
     for name, param in model.named_parameters():
         if name in old_model_state_dict:
             regularitzation_loss += (importances[name] * (param - old_model_state_dict[name]).pow(2)).sum() 
+
+    if distillation_loss is not None:
+        regular_loss = loss + distillation_loss
+    else:
+        regular_loss = loss
     
-    return loss + alpha * regularitzation_loss
+    return (2-alpha) * regular_loss + alpha * regularitzation_loss
 
 def add_importances(list_task_importances, mean_importances=False):
     importances = {}

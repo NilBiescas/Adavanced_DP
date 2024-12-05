@@ -12,14 +12,33 @@ from .utils.task_vectors import TaskVector
 from .utils.plotting_functions import plot_strictly_lower_triangular_heatmap, createCSV, plotStablityPlasticity, generate_plot_practica
 from .utils.evaluateFunctions_and_definiOptimizer import define_optimizer, top1_and_top_k_accuracy_domain
 
-#
 
 def compute_criterion(criterion, model, output, target, domains_trained, alpha=1.0):
 
     if model.train_with_ewc and domains_trained >= 1:
+
         return compute_loss(model, model._old_model_state_dict, output, target, model._importances, criterion=criterion, alpha=alpha)
     else:
+
         return criterion(output, target)
+
+def computeCriterionTeacherStudent(criterion, student, teacher, output_student, output_teacher, target, domains_trained, alpha_ewc_student, alpha_ewc_teacher, temperature=1):
+
+    distill_loss = distillation_loss(output_student, output_teacher.detach(), T=temperature)
+
+    if student.train_with_ewc and domains_trained >= 1:
+        loss_student = compute_loss(student, student._old_model_state_dict, output_student, target, student._importances, criterion=criterion, alpha=alpha_ewc_student, distillation_loss=distill_loss)
+    else:
+        loss_student = criterion(output_student, target)
+
+    if teacher.train_with_ewc and domains_trained >= 1:
+        loss_teacher = compute_loss(teacher, teacher._old_model_state_dict, output_teacher, target, teacher._importances, criterion=criterion, alpha=alpha_ewc_teacher, distillation_loss=distill_loss)
+    else:
+        loss_teacher = criterion(output_teacher, target)
+
+    return loss_student, loss_teacher
+
+    
 
 def baseline_train_epoch(model, train_dataloader, val_dataloder, optimizer, criterion, device, epoch, domains_trained, alpha):
     model.train()
@@ -78,13 +97,9 @@ def TeacherStudent_train_epoch(teacher, student, train_dataloader, val_dataloder
         teacher_output = teacher(data)
         student_output = student(data)
         
-        teacher_loss = compute_criterion(criterion, teacher, teacher_output, target, domains_trained, alpha_ewc_teacher)
-        student_loss = compute_criterion(criterion, student, student_output, target, domains_trained, alpha_ewc_student)
-
-        distillation = distillation_loss(student_output, teacher_output.detach(), T=temperature)
+        teacher_loss, student_loss = computeCriterionTeacherStudent(criterion, student, teacher, student_output, teacher_output, target, domains_trained, alpha_ewc_student, alpha_ewc_teacher, temperature=temperature)
         
         teacher_loss.backward()
-        student_loss += distillation
         student_loss.backward()
         
         if not teacher.gradient_stop:
@@ -116,7 +131,7 @@ def TeacherStudent_train_epoch(teacher, student, train_dataloader, val_dataloder
 
 def baseline_train(model, train_dataloader, val_dataloder, test_dataloader, 
                    optimizer, criterion, device, epochs, early_stopping_patience=5, 
-                   scheduler_config=None, alpha=1.0):
+                   scheduler_config=None, alpha=1.0, **kwargs):
     
     print("Training")
 
@@ -129,7 +144,20 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
 
     prev_accs_top1 = []
     prev_accs_top5 = []
+    test_prev_accs_top1 = []
+    test_prev_accs_top5 = []
     
+    if model.train_with_ewc: # Per si volem probar baseline amb ewc
+        if ("mean_importances" not in kwargs["training_params"]) or (kwargs["training_params"]["mean_importances"] == True):
+            print("Using mean importances")
+            print("WARNING: This behaviour does not work as expected")
+            Averaging_importances = True
+        else:
+            print("Not using mean importances")
+            Averaging_importances = False
+            
+        list_task_importances_student = [] 
+        
     for domain in range(num_domains):
         # Seting the current domain to train and validation dataloaders
         train_dataloader.dataset.select_domain(domain)
@@ -174,25 +202,44 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
             elif (early_stopping_patience != -1) and (counter >= early_stopping_patience):
                 break
         
+        Domains_trained += 1
+        
+        if model.train_with_ewc: # Save only if we are using ewc
+            student_importances = compute_importances(model, val_dataloder, criterion, device)
+            list_task_importances_student.append(student_importances)
+            student_importances = add_importances(list_task_importances_student, mean_importances=Averaging_importances)
+            model._importances = student_importances
+            model._old_model_state_dict = model.state_dict()
+        
         model.load_state_dict(torch.load(f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/model_{idx2domain[domain]}.pth"))
 
-        Domains_trained += 1
+        ### Evaluate plasticty ###
         eval_top1_acc = []
         eval_top5_acc = []
         for i in range(domain+1):
             val_dataloder.dataset.select_domain(i)
-            test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain(model, val_dataloder, device, k=5)
-            wandb.log({f"top1_acc_prev_{idx2domain[i]}": test_top1_acc, f"top5_acc_prev_{idx2domain[i]}": test_top5_acc, "Trained_domains":Domains_trained})
-            eval_top1_acc.append(test_top1_acc)
-            eval_top5_acc.append(test_top5_acc)
-        
-        prev_accs_top1.append(eval_top1_acc); prev_accs_top5.append(eval_top5_acc)
+            val_top1_acc, val_top5_acc = top1_and_top_k_accuracy_domain(model, val_dataloder, device, k=5)
+            wandb.log({f"top1_acc_prev_{idx2domain[i]}": val_top1_acc, f"top5_acc_prev_{idx2domain[i]}": val_top5_acc, "Trained_domains":Domains_trained})
+            eval_top1_acc.append(val_top1_acc)
+            eval_top5_acc.append(val_top5_acc)
+        prev_accs_top1.append(eval_top1_acc); prev_accs_top5.append(eval_top5_acc) # Save the results
+
+        ### Evaluate plasticty ###
+        test_top1_acc = []
+        test_top5_acc = []
+        for i in range(domain +1):
+            test_dataloader.dataset.select_domain(i)
+            test_top1_acc_d, test_top5_acc_d = top1_and_top_k_accuracy_domain(model, test_dataloader, device, k=5)
+            test_top1_acc.append(test_top1_acc_d.cpu().item()); test_top5_acc.append(test_top5_acc_d.cpu().item())
+        test_prev_accs_top1.append(test_top1_acc); test_prev_accs_top5.append(test_top5_acc) # Save the results
+
         os.makedirs(f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/train_plots", exist_ok=True)
         save_path = f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/train_plots/num_domains_{Domains_trained}_domain_{idx2domain[i]}"
         generate_plot_practica(eval_top1_acc, eval_top5_acc, val_dataloder.dataset.num_domains, idx2domain, prev_accs_top1, prev_accs_top5, save_path)
     
     result_top1 = []
     result_top5 = []
+    # Evaluate plasticity
     for i in range(num_domains):
         test_dataloader.dataset.select_domain(i)
         test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain(model, test_dataloader, device, k=5)
@@ -202,6 +249,14 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
 
     save_path = f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/test_{model.name}"
     generate_plot_practica(result_top1, result_top5, test_dataloader.dataset.num_domains, idx2domain, None, None, save_path)
+    
+    createCSV(test_prev_accs_top1, f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/afterEachdomain_top1_plasticity.csv", idx2domain)
+    createCSV(test_prev_accs_top5, f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/afterEachdomain_top5_plasticity.csv", idx2domain)
+    
+    plotStablityPlasticity(test_prev_accs_top1, result_top1, f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/stability_plasticity.png")
+    plot_strictly_lower_triangular_heatmap(test_prev_accs_top1, list(idx2domain.values()), f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/heatmap_top1.png")
+    plot_strictly_lower_triangular_heatmap(test_prev_accs_top5, list(idx2domain.values()), f"/fhome/amlai07/Adavanced_DP/Runs/{model.name}/heatmap_top5.png")
+    
     return model
     
 
@@ -256,6 +311,13 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
                 scheduler_student = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_student, mode='min', factor=scheduler_config["factor"], patience=scheduler_config["patience"], threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08, verbose=False)
             else:
                 raise ValueError(f'{scheduler_config["name"]} Scheduler not supported')
+            
+        if (config is not None) and ("warm_start" in config["teacher"]) and (config["teacher"]["warm_start"]["warm_start"]):
+            print(f"Doing a warm start for the teacher, in domain {idx2domain[domain]} for {config['teacher']['warm_start']['epochs']} epochs")
+            teacher.train()
+            for epoch in range(config["teacher"]["warm_start"]["epochs"]):
+                train_loss, val_loss = baseline_train_epoch(teacher, train_dataloader, val_dataloder, optimizer_teacher, criterion, device, epoch, Domains_trained, alpha_ewc_teacher)
+                wandb.log({f"train_loss_teacher{idx2domain[domain]}": train_loss, f"val_loss_teacher{idx2domain[domain]}": val_loss, "warm_epoch": epoch})
 
         best_val_loss = float('inf')
         counter = 0

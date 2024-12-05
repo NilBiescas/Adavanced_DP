@@ -5,7 +5,7 @@ import wandb
 import torch
 
 from src.Models import define_network
-from Adavanced_DP.src.train_loops import baseline_train, Task_Arithmetics_Train
+from src.train_loops import baseline_train, Task_Arithmetics_Train
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -16,14 +16,15 @@ with open(f"/fhome/amlai07/Adavanced_DP/Setups/{name_yaml}.yaml") as f:
 
 model = define_network(config["model_params"]).to(device)
 
-print(config["dataset_params"]["dataset"])
+
 if not "dataset" in config["dataset_params"] or config["dataset_params"]["dataset"] == "DomainNet": 
     from src.Loaders.DataLoaders import get_loaders
     train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["image_size"], config["dataset_params"]["batch_size"])
 
 elif config["dataset_params"]["dataset"] == "DN4IL":
     from src.Loaders.DataLoaders_DN4IL import get_loaders
-    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["path_dn4il"], config["dataset_params"]["image_size"], config["dataset_params"]["batch_size"])
+    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["path_dn4il"], config["dataset_params"]["image_size"], 
+                                                        config["dataset_params"]["batch_size"], config)
 else:
     raise ValueError(f'{config["dataset_params"]["dataset"]} Dataset not supported')
 
@@ -41,6 +42,8 @@ elif config["training_params"]["optimizer"] == "SGD":
 else:
     raise ValueError(f'{config["training_params"]["optimizer"]} Optimizer not supported')
 
+
+print(config["training_params"])
 if config["training_params"]["criterion"] == "CrossEntropy":
     criterion = torch.nn.CrossEntropyLoss(reduction='mean')
 else:
@@ -65,11 +68,24 @@ model.name = name_yaml
 
 if ("Approach" not in config["training_params"]) or ("Baseline" == config["training_params"]["Approach"]):
     print("Baseline Approach (Standard Finetuning)")
-    model = baseline_train(model, train_loader, val_loader, test_loader, optimizer, criterion, device, config["training_params"]["epochs"], early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
+    model = baseline_train(model, train_loader, val_loader, test_loader, 
+                           optimizer, criterion, device, config["training_params"]["epochs"], 
+                           early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
+
 elif "TaskArithmetics" == config["training_params"]["Approach"]:
     print("Task Arithmetics Approach")
     optimizer_config = {"optimizer": config["training_params"]["optimizer"], "lr": config["training_params"]["lr"]}
     model = Task_Arithmetics_Train(model, train_loader, val_loader, test_loader, optimizer_config, criterion, device, config["training_params"]["epochs"], early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
+
+elif "model_with_ewc" == config["training_params"]["Approach"]:
+    print("EWC amb sol un model")        
+
+    ## RECORDA QUE UTILIZEM EL CONFIG A DINS, COM A KWARGS
+    model = baseline_train(model, 
+                           train_loader, val_loader, test_loader, 
+                           optimizer, criterion, device, config["training_params"]["epochs"], 
+                           early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler, 
+                           alpha=config['ewc_params']['lambda'], **config)
 else:
     raise ValueError(f'{config["training_params"]["Approach"]} Approach not supported')
 

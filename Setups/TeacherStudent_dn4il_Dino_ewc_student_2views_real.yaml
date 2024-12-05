@@ -6,7 +6,10 @@ dataset_params:
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  batch_size: 11
+  batch_size: 4
+  return2views: False
+  transform_type: DINO
+  domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
 
 # Training configuration
 training_params:
@@ -19,7 +22,7 @@ training_params:
   criterion: CrossEntropy
   epochs: 10
   early_stopping_patience: -1
-  Approach: DinoTeacherStudent
+  Approach: DinoTeacherStudentReal
 
 teacher:
   temperature: 0.07

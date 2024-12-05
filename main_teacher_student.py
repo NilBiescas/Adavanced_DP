@@ -11,12 +11,14 @@ from src.Loaders.DataLoaders import get_loaders
 
 from src.train_loops import train_teacher_student
 from src.train_dino import train_teacher_student_DINO
+from src.train_dino_real import train_teacher_student_DINO_real
+
 from src.utils.evaluateFunctions_and_definiOptimizer import define_optimizer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-name_yaml = sys.argv[1]
 
+name_yaml = sys.argv[1]
 with open(f"/fhome/amlai07/Adavanced_DP/Setups/{name_yaml}.yaml") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -30,7 +32,8 @@ if not "dataset" in config["dataset_params"] or config["dataset_params"]["datase
 
 elif config["dataset_params"]["dataset"] == "DN4IL":
     from src.Loaders.DataLoaders_DN4IL import get_loaders
-    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["path_dn4il"], config["dataset_params"]["image_size"], config["dataset_params"]["batch_size"])
+    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["path_dn4il"], config["dataset_params"]["image_size"], 
+                                                        config["dataset_params"]["batch_size"], config)
 else:
     raise ValueError(f'{config["dataset_params"]["dataset"]} Dataset not supported')
 
@@ -52,9 +55,6 @@ if "early_stopping_patience" not in config["training_params"]:
     config["training_params"]["early_stopping_patience"] = -1
 
 
-optimizer_teacher = define_optimizer(teacher, config['teacher'])
-optimizer_student = define_optimizer(student, config['student'])
-
 teacher.name = name_yaml
 student.name = name_yaml
 
@@ -69,11 +69,16 @@ else:
 
 if ("Approach" not in config["training_params"]) or ("TeacherStudent" == config["training_params"]["Approach"]):
     print("Training Teacher Student")
+    
+    optimizer_teacher = define_optimizer(teacher, config['teacher']['training_params'])
+    optimizer_student = define_optimizer(student, config['student']['training_params'])
+
     teacher, student = train_teacher_student(teacher,student, 
                                 train_loader, val_loader, test_loader, 
                                 optimizer_teacher, optimizer_student,
                                 criterion, 
                                 device,
+                                epochs=config["training_params"]["epochs"],
                                 scheduler_config=config_scheduler,
                                 Averaging_importances=mean_importances,
                                 config=config)
@@ -81,7 +86,20 @@ if ("Approach" not in config["training_params"]) or ("TeacherStudent" == config[
 
 elif "DinoTeacherStudent" == config["training_params"]["Approach"]:
     print("Training DINO Teacher Student")
+    optimizer_student = define_optimizer(student, config['student']['training_params'])
     teacher, student = train_teacher_student_DINO(teacher,student, 
+                                train_loader, val_loader, test_loader, 
+                                optimizer_student,
+                                criterion, 
+                                device,
+                                scheduler_config=config_scheduler,
+                                Averaging_importances=mean_importances,
+                                config=config)
+    
+elif "DinoTeacherStudentReal" == config["training_params"]["Approach"]:
+    print("Training DINO Teacher Student Real")
+    optimizer_student = define_optimizer(student, config['student']['training_params'])
+    teacher, student = train_teacher_student_DINO_real(teacher,student, 
                                 train_loader, val_loader, test_loader, 
                                 optimizer_student,
                                 criterion, 

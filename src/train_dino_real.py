@@ -17,45 +17,58 @@ import torch.nn.functional as F
 from .utils.evaluateFunctions_and_definiOptimizer import top1_and_top_k_accuracy_domain
 from .utils.plotting_functions import generate_plot_practica, createCSV, plotStablityPlasticity, plot_strictly_lower_triangular_heatmap
 
+import numpy as np
 class DINOLoss(nn.Module):
-    def __init__(self, output_dim, teacher_temp=0.07, student_temp=0.1, center_momentum=0.9):
-        """
-        DINO Loss for Vision Transformers
-        Args:
-            output_dim (int): Dimension of the output features.
-            teacher_temp (float): Temperature for teacher outputs.
-            student_temp (float): Temperature for student outputs.
-            center_momentum (float): Momentum for the teacher output centering.
-        """
-        super(DINOLoss, self).__init__()
-        self.teacher_temp = teacher_temp
+    def __init__(self, out_dim, ncrops, warmup_teacher_temp, teacher_temp,
+                 warmup_teacher_temp_epochs, nepochs, student_temp=0.1,
+                 center_momentum=0.9):
+        super().__init__()
         self.student_temp = student_temp
         self.center_momentum = center_momentum
-        self.register_buffer("teacher_center", torch.zeros(1, output_dim))
+        self.ncrops = ncrops
+        self.register_buffer("center", torch.zeros(1, out_dim))
+        # we apply a warm up for the teacher temperature because
+        # a too high temperature makes the training instable at the beginning
+        self.teacher_temp_schedule = np.concatenate((
+            np.linspace(warmup_teacher_temp,
+                        teacher_temp, warmup_teacher_temp_epochs),
+            np.ones(nepochs - warmup_teacher_temp_epochs) * teacher_temp
+        ))
 
-        
-        
-    def forward(self, student_output, teacher_output):
+    def forward(self, student_output, teacher_output, epoch):
         """
-        Compute the DINO loss.
-        Args:
-            student_output (torch.Tensor): Logits from the student network (batch_size, output_dim).
-            teacher_output (torch.Tensor): Logits from the teacher network (batch_size, output_dim).
-        Returns:
-            torch.Tensor: Scalar loss value.
+        Cross-entropy between softmax outputs of the teacher and student networks.
         """
-        # Normalize the logits for both teacher and student
-        student_logits = F.log_softmax(student_output / self.student_temp, dim=-1)
-        teacher_logits = F.softmax((teacher_output - self.teacher_center) / self.teacher_temp, dim=-1)
-        
-        # Update teacher center
-        with torch.no_grad():
-            batch_center = teacher_output.mean(dim=0, keepdim=True)
-            self.teacher_center = self.center_momentum * self.teacher_center + (1 - self.center_momentum) * batch_center
+        student_out = student_output / self.student_temp
+        student_out = student_out.chunk(self.ncrops)
 
-        # Compute the loss
-        loss = torch.sum(-teacher_logits * student_logits, dim=-1).mean()
-        return loss
+        # teacher centering and sharpening
+        temp = self.teacher_temp_schedule[epoch]
+        teacher_out = F.softmax((teacher_output - self.center) / temp, dim=-1)
+        teacher_out = teacher_out.detach().chunk(2)
+
+        total_loss = 0
+        n_loss_terms = 0
+        for iq, q in enumerate(teacher_out):
+            for v in range(len(student_out)):
+                if v == iq:
+                    # we skip cases where student and teacher operate on the same view
+                    continue
+                loss = torch.sum(-q * F.log_softmax(student_out[v], dim=-1), dim=-1)
+                total_loss += loss.mean()
+                n_loss_terms += 1
+        total_loss /= n_loss_terms
+        self.update_center(teacher_output)
+        return total_loss
+
+    @torch.no_grad()
+    def update_center(self, teacher_output):
+        """
+        Update center used for teacher output.
+        """
+        batch_center = torch.sum(teacher_output, dim=0, keepdim=True)
+        # ema update
+        self.center = self.center * self.center_momentum + batch_center * (1 - self.center_momentum)
 
 def compute_criterion(criterion, model, output, target, domains_trained, alpha=1.0):
 
@@ -79,7 +92,7 @@ def update_moving_average(ema_model, student_model, alpha=0.99):
 
 
 
-def TeacherStudent_train_epoch_dino(teacher: nn.Module, student: nn.Module, 
+def TeacherStudent_train_epoch_dino_real(teacher: nn.Module, student: nn.Module, 
                                     train_dataloader: torch.utils.data.dataloader, val_dataloder: torch.utils.data.dataloader, optimizer_studen: torch.optim.Optimizer, 
                                     criterion: nn.CrossEntropyLoss, dino_distillation_loss: nn.Module, device: int, epoch: int, 
                                     domains_trained: int, alpha_ewc_student: float, update_frequency: int =10):
@@ -89,26 +102,26 @@ def TeacherStudent_train_epoch_dino(teacher: nn.Module, student: nn.Module,
     print(f"Epoch {epoch}")
     student_train_total_loss = 0
     for i, data in tqdm(enumerate(train_dataloader), total=len(train_dataloader)):
-        view1, view2, target = data
-    
-        view1, view2, target = view1.to(device), view2.to(device), target.to(device)
-        
+        images, target = data
+        global_views = torch.cat(images[:2]).to(device)
+        local_views = torch.cat(images[2:]).to(device)
+        target = target.to(device)
         
         optimizer_studen.zero_grad()
+        teacher_output = teacher(global_views)  # only the 2 global views pass through the teacher
+        student_output = student(local_views)
+        loss = dino_distillation_loss(student_output, teacher_output, epoch)
         
-        teacher_output = teacher(view1).detach()
-        student_output = student(view2)
         
-        student_loss = compute_criterion(criterion, student, student_output, target, domains_trained, alpha_ewc_student)
-
-        distillation = dino_distillation_loss(student_output, teacher_output)
+        student_output_global_views = student(global_views)
+        first_view, second_view = student_output_global_views.chunk(2)
+        hard_loss1 = compute_criterion(criterion, student, first_view, target, domains_trained, alpha_ewc_student)
+        hard_loss2 = compute_criterion(criterion, student, second_view, target, domains_trained, alpha_ewc_student)
         
-        update_moving_average(teacher, student, alpha=0.99)
-        
-        student_loss += distillation
+        student_loss = loss + hard_loss1 + hard_loss2
         student_loss.backward()
-        
-            
+        update_moving_average(teacher, student, alpha=0.99)
+
         optimizer_studen.step()
 
         #teacher_train_total_loss += teacher_loss.item() if not teacher.gradient_stop else 0
@@ -121,11 +134,9 @@ def TeacherStudent_train_epoch_dino(teacher: nn.Module, student: nn.Module,
     cross_entropy_loss = torch.nn.CrossEntropyLoss()
     with torch.no_grad():
         for i, data in tqdm(enumerate(val_dataloder), total=len(val_dataloder)):
-            view1, target = data
-                
-            view1, target = view1.to(device), target.to(device)
+            data, target = data[0].to(device), data[1].to(device)
 
-            student_output = student(view1)
+            student_output = student(data)
             loss = cross_entropy_loss(student_output, target)
             val_loss += loss.item()
             
@@ -133,17 +144,21 @@ def TeacherStudent_train_epoch_dino(teacher: nn.Module, student: nn.Module,
     return student_train_total_loss, val_loss
 
 
-def top1_and_top_k_accuracy_domain_dino(model, loader, device, k=5):
+def top1_and_top_k_accuracy_domain_dino_real(model, loader, device, k=5):
     print("Computing accuracy")
     total = 0
     correct_top1 = 0
     correct_topk = 0
     for i, data in enumerate(loader):
-        if len(data) == 3:
-            inputs, _, targets = data
+        if len(data) == 2:
+            inputs, targets = data
+            inputs = inputs[0]
+
         else:
             inputs, targets = data
-            
+        
+        if inputs.dim() == 3:
+            inputs = inputs.unsqueeze(0)
         inputs = inputs.to(device)
         targets = targets.to(device)
         
@@ -166,7 +181,8 @@ def top1_and_top_k_accuracy_domain_dino(model, loader, device, k=5):
     return top1_acc*100, topk_acc*100
 
 
-def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module, 
+
+def train_teacher_student_DINO_real(teacher: nn.Module, student: nn.Module, 
                                train_dataloader, val_dataloder, test_dataloader, 
                                optimizer_student, criterion, 
                           device,scheduler_config=None, Averaging_importances=False, config=None):
@@ -177,7 +193,8 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
     alpha_ewc_teacher= config["teacher"]["ewc_params"]["lambda"]  # Updated,
     early_stopping_patience=config["training_params"]["early_stopping_patience"]
     epochs = config["training_params"]["epochs"]
-
+    
+    
     upd_frequency = config["student"]['dino_params']["update_frequency"]
     
     print("Alpha EWC Student:", alpha_ewc_student)
@@ -198,11 +215,21 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
       
     list_task_importances_student = []
     
-    dino_loss = DINOLoss(100, teacher_temp=config['teacher']['temperature'],
-                         student_temp=config['student']['temperature'], center_momentum=0.9).to(device)
+    #dino_loss = DINOLoss(100, teacher_temp=config['teacher']['temperature'],
+    #                     student_temp=config['student']['temperature'], center_momentum=0.9).to(device)
 
+    dino_loss = DINOLoss(
+        out_dim = 100,
+        ncrops = 10,  # total number of crops = 2 global crops + local_crops_number
+        warmup_teacher_temp = 0.04,
+        teacher_temp = 0.04,
+        warmup_teacher_temp_epochs = 3,
+        nepochs = epochs,
+    ).to(device)
 
     teacher.load_state_dict(student.state_dict())
+    teacher.to(device)
+    student.to(device)
     # there is no backpropagation through the teacher, so no need for gradients
     for p in teacher.parameters():
         p.requires_grad = False
@@ -226,7 +253,7 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
         best_val_loss = float('inf')
         counter = 0
         for epoch in tqdm(range(epochs)):
-            student_train_total_loss, val_loss = TeacherStudent_train_epoch_dino(teacher, student, train_dataloader, val_dataloder, 
+            student_train_total_loss, val_loss = TeacherStudent_train_epoch_dino_real(teacher, student, train_dataloader, val_dataloder, 
                                                                                                     optimizer_student, 
                                                                                                     criterion, dino_loss, device, epoch, Domains_trained, alpha_ewc_student, 
                                                                                                     update_frequency=upd_frequency)
@@ -235,9 +262,9 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
                     f"val_loss_student{idx2domain[domain]}": val_loss, 
                     "epoch": epoch})
         
-            train_top1_acc, train_top5_acc = top1_and_top_k_accuracy_domain_dino(student, train_dataloader, device, k=5)
+            train_top1_acc, train_top5_acc = top1_and_top_k_accuracy_domain_dino_real(student, train_dataloader, device, k=5)
             wandb.log({f"train_top1_acc_student_{idx2domain[domain]}": train_top1_acc, f"train_top5_acc_student_{idx2domain[domain]}": train_top5_acc, "epoch": epoch})
-            val_top1_acc, val_top5_acc = top1_and_top_k_accuracy_domain_dino(student, val_dataloder, device, k=5)
+            val_top1_acc, val_top5_acc = top1_and_top_k_accuracy_domain_dino_real(student, val_dataloder, device, k=5)
             wandb.log({f"val_top1_acc_student_{idx2domain[domain]}": val_top1_acc, f"val_top5_acc_student_{idx2domain[domain]}": val_top5_acc, "epoch": epoch})
 
             if scheduler_config is not None:
@@ -275,7 +302,7 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
         for i in range(domain+1):
             #train_dataloader.dataset.select_domain(i)
             val_dataloder.dataset.select_domain(i)
-            test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain_dino(student, val_dataloder, device, k=5)
+            test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain_dino_real(student, val_dataloder, device, k=5)
             wandb.log({f"top1_acc_prev_student_{idx2domain[i]}": test_top1_acc, f"top5_acc_prev_student_{idx2domain[i]}": test_top5_acc, "Trained_domains":Domains_trained})
             eval_top1_acc.append(test_top1_acc); eval_top5_acc.append(test_top5_acc)
 
@@ -284,7 +311,7 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
         # Computing stability
         for i in range(domain +1):
             test_dataloader.dataset.select_domain(i)
-            test_top1_acc_d, test_top5_acc_d = top1_and_top_k_accuracy_domain_dino(student, test_dataloader, device, k=5)
+            test_top1_acc_d, test_top5_acc_d = top1_and_top_k_accuracy_domain_dino_real(student, test_dataloader, device, k=5)
             test_top1_acc.append(test_top1_acc_d.cpu().item()); test_top5_acc.append(test_top5_acc_d.cpu().item())
             
         prev_accs_top1.append(eval_top1_acc); prev_accs_top5.append(eval_top5_acc)
@@ -300,7 +327,7 @@ def train_teacher_student_DINO(teacher: nn.Module, student: nn.Module,
     # Evaluate stability
     for i in range(num_domains):
         test_dataloader.dataset.select_domain(i)
-        test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain_dino(student, test_dataloader, device, k=5)
+        test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain(student, test_dataloader, device, k=5)
         result_top1.append(test_top1_acc.cpu())
         result_top5.append(test_top5_acc.cpu())
         wandb.log({f"test_top1_acc_student_{idx2domain[domain]}": test_top1_acc})

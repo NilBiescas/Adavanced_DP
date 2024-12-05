@@ -20,33 +20,16 @@ training_params:
   criterion: CrossEntropy
   epochs: 10
   early_stopping_patience: -1
-  Approach: "TeacherStudent"
+  optimizer: AdamW
+  lr: 0.0001
+  Approach: model_with_ewc
 
+model_params: 
+  type: baseline_with_ewc
+  num_classes: 100
+  train_with_ewc: True
+  gradient_stop: False
 
-teacher:
-  model_params: 
-    type: baseline_with_ewc
-    num_classes: 100
-    train_with_ewc: True
-    gradient_stop: False
-
-  training_params:
-    optimizer: AdamW
-    lr: 0.0001
-
-  ewc_params:
-    lambda: 1
-    
-student:
-  model_params: 
-    type: baseline_with_ewc
-    num_classes: 100
-    train_with_ewc: True
-    gradient_stop: False
-
-  training_params:
-    optimizer: AdamW
-    lr: 0.0001
-
-  ewc_params:
-    lambda: 1
+ewc_params:
+  lambda: 1
+  

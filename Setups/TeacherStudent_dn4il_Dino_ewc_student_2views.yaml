@@ -6,7 +6,9 @@ dataset_params:
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  batch_size: 11
+  batch_size: 15
+  return2views: True
+  transform_type: type1
 
 # Training configuration
 training_params:

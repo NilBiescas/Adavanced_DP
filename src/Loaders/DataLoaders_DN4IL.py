@@ -10,30 +10,90 @@ from enum import Enum
 from sklearn.model_selection import train_test_split
 
 from src.Loaders.ClassNames import dn4il_classnames
+# from ClassNames import dn4il_classnames
 
 class partition(Enum):
     TRAIN = 'train'
     VALIDATION = 'validation'
     TEST = 'test'
 
+from PIL import Image
+
+class DataAugmentationDINO():
+    def __init__(self, global_crops_scale, local_crops_scale, local_crops_number):
+        flip_and_color_jitter = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomApply(
+                [transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),],
+                p=0.8
+            ),
+            transforms.RandomGrayscale(p=0.2),
+        ])
+        normalize = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+        ])
+
+        # first global crop
+        self.global_transfo1 = transforms.Compose([
+            transforms.RandomResizedCrop(384, scale=global_crops_scale, interpolation=Image.BICUBIC),
+            flip_and_color_jitter,
+            transforms.GaussianBlur(1.0),
+            normalize,
+        ])
+        # second global crop
+        self.global_transfo2 = transforms.Compose([
+            transforms.RandomResizedCrop(384, scale=global_crops_scale, interpolation=Image.BICUBIC),
+            flip_and_color_jitter,
+            transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5.)),
+            normalize,
+        ])
+        # transformation for the local small crops
+        self.local_crops_number = local_crops_number
+        self.local_transfo = transforms.Compose([
+            transforms.RandomResizedCrop(224, scale=local_crops_scale, interpolation=Image.BICUBIC),
+            flip_and_color_jitter,
+            transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5.)),
+            normalize,
+        ])
+
+    def __call__(self, image):
+        crops = []   
+        image = Image.fromarray(image)
+        crops.append(self.global_transfo1(image))
+        
+        
+        crops.append(self.global_transfo2(image))
+        for _ in range(self.local_crops_number):    
+            crops.append(self.local_transfo(image))
+
+        return crops
+
 
 class DN4IL(Dataset):
-    def __init__(self, root, root_dn4il, partition, image_size=384, validation_size=0.15, random_state=42, start_domain_real=True):
+    def __init__(self, root, root_dn4il, partition, image_size=384, validation_size=0.15, random_state=42, 
+                 return2views = False, transform_type='default', domainOrder=None, buffer_size=-1, size_buffer_sample=0.25):
+        self.seed = random_state
         self.root = root
         self.root_dn4il = root_dn4il
         self.partition = partition
-
+        
+        
+        self.return2views = return2views
+        self.transform_type = transform_type
+        
         self.idx2class = dn4il_classnames
         self.class2idx = {v: k for k, v in self.idx2class.items()}
 
         files = os.listdir(self.root)
         domains = [f for f in files if '.' not in f]
 
-        if start_domain_real: # TODO: Afegir que pugeum seleccionar qualsevol domini
-            # Setting the real domain as the first one we train on
+        if domainOrder is None:
             domains.remove("real")
             domains = ["real"] + sorted(domains)
-        
+        else:
+            domains = domainOrder
+
         self.Domain2Use = domains[0]
         self.DomainIDX = 0
         self.domains = domains
@@ -62,15 +122,43 @@ class DN4IL(Dataset):
                     self.data[domain]["paths"] = X_val
                     self.data[domain]["labels"] = y_val
 
-            self.transform = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.RandomHorizontalFlip(),
-                transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
-                transforms.CenterCrop(image_size),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-            ])
+            if self.transform_type == 'default':
+                self.transform = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.RandomHorizontalFlip(),
+                    transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
+                    transforms.CenterCrop(image_size),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
+                
+            elif self.transform_type == 'type1':
+                
+                self.transform = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.RandomHorizontalFlip(),
+                    transforms.RandomVerticalFlip(),
+                    transforms.RandomApply([
+                        
+                        transforms.ColorJitter(brightness=.5, hue=.3),
+                        transforms.RandomRotation(degrees=(0, 180)),
+                        ], p=0.5),
 
-
+                    transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
+                    transforms.CenterCrop(image_size),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
+                
+                
+            elif self.transform_type == 'DINO':
+                if self.partition == partition.TRAIN:
+                    self.transform = DataAugmentationDINO(global_crops_scale=(0.14, 1.), local_crops_scale=(0.05, 0.4), local_crops_number=8)
+                else:
+                    self.transform = transforms.Compose([
+                        transforms.ToTensor(),
+                        transforms.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR),
+                        transforms.CenterCrop(image_size),
+                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                ])
         else:
             # Iterate over the domains and load the data
             for domain in domains:
@@ -88,6 +176,65 @@ class DN4IL(Dataset):
                     transforms.CenterCrop(image_size),
                     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
+
+
+        self.buffer_size = 0
+        if (partition == partition.TRAIN) and (buffer_size > 0):
+            self.buffer = {domain: {"paths": [], "labels": []} for domain in domains}
+            self.buffer2use = {domain: {"paths": [], "labels": []} for domain in domains}
+            self.buffer_size = buffer_size
+            self.size_buffer_sample = size_buffer_sample
+
+
+    def gen_buffer(self, domain, smaple_size):
+        """
+        Generate a buffer of data for the given domain. 
+        """
+        paths = self.data[domain]["paths"]
+        labels = self.data[domain]["labels"]
+
+        permutation = torch.randperm(len(paths), generator=torch.Generator().manual_seed(self.seed))
+
+        # If the sample size is bigger than the number of classes, we sample at least one image per class
+        if smaple_size >= len(self.idx2class):
+            class_idxs = [i for i in range(len(self.idx2class))]
+            idxs = []
+            # Reorder the indexes so we sample at least one image per class
+            labels = torch.tensor(labels)
+            labels = labels[permutation]
+            for i in class_idxs:
+                idx = permutation[labels == i][0]
+                idxs.append(idx)
+            
+            instances2sample = smaple_size - len(self.idx2class)
+            if instances2sample > 0:
+                # remove sampled indexes
+                permutation = permutation[~torch.tensor(idxs)]
+                idxs += permutation[:instances2sample].tolist()
+        else:
+            idxs = permutation[:smaple_size].tolist()
+
+        self.buffer[domain]["paths"] = [paths[i] for i in idxs]
+        self.buffer[domain]["labels"] = [labels[i] for i in idxs]
+
+    def subsample_buffer(self, domain, sample_size):
+        """
+        Subsample the buffer of the given domain.
+        """
+        paths = self.buffer[domain]["paths"]
+        labels = self.buffer[domain]["labels"]
+
+        idxs = torch.randperm(len(paths))[:sample_size]
+        self.buffer2use[domain]["paths"] = [paths[i] for i in idxs]
+        self.buffer2use[domain]["labels"] = [labels[i] for i in idxs]
+
+    def gen_buffer2use(self, current_trained_domains):
+        """
+        Subsample the buffer for all previous domains. 
+        This is done so it does not show the same images all the time.
+        """
+        for i in range(current_trained_domains+1):
+            self.subsample_buffer(self.domains[i], int(self.buffer_size*self.size_buffer_sample))
 
     @property
     def num_domains(self):
@@ -123,6 +270,16 @@ class DN4IL(Dataset):
         self.Domain2Use = self.domains[domain]
         self.DomainIDX = domain
 
+        if self.partition == partition.TRAIN:
+            if (self.buffer_size > 0) and (domain != 0):
+                # Generate the buffer for the current domain if it is empty 
+                # # (If we already generated the buffer we do not change it)
+                if len(self.buffer[self.domains[domain-1]]["paths"]) == 0:
+                    self.gen_buffer(self.domains[domain-1], self.buffer_size)
+                
+                self.gen_buffer2use(domain-1)
+
+
     def next_domain(self):
         """
         Select the next domain in the dataset.
@@ -130,43 +287,103 @@ class DN4IL(Dataset):
         self.DomainIDX += 1
         self.Domain2Use = self.domains[self.DomainIDX]
 
+        if self.partition == partition.TRAIN:
+            if (self.buffer_size > 0) and (self.DomainIDX != 0):
+                # Generate the buffer for the current domain if it is empty 
+                # # (If we already generated the buffer we do not change it)
+                if len(self.buffer[self.domains[self.DomainIDX-1]]["paths"]) == 0:
+                    self.gen_buffer(self.Domain2Use, self.buffer_size)
+                
+                self.gen_buffer2use(self.DomainIDX-1)
+
     def __len__(self):
-        return len(self.data[self.Domain2Use]["labels"])
+        if (self.partition != partition.TRAIN) or (self.buffer_size < 1):
+            return len(self.data[self.Domain2Use]["labels"])
+        
+        buffer_samples = [len(self.buffer2use[domain]["labels"]) for domain in self.domains[:self.DomainIDX]]
+        return len(self.data[self.Domain2Use]["labels"]) + sum(buffer_samples)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.root, self.data[self.Domain2Use]["paths"][idx])
-        label = self.data[self.Domain2Use]["labels"][idx]
+        if (self.partition == partition.TRAIN) or (self.buffer_size >= 1):
+            paths = self.data[self.Domain2Use]["paths"]
+            labels = self.data[self.Domain2Use]["labels"]
+            for i in range(self.DomainIDX):
+                paths += self.buffer2use[self.domains[i]]["paths"]
+                labels += self.buffer2use[self.domains[i]]["labels"]
+        else:
+            paths = self.data[self.Domain2Use]["paths"]
+            labels = self.data[self.Domain2Use]["labels"]
+
+        img_path = os.path.join(self.root, paths[idx])
+        label = labels[idx]
 
         img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
-        img = self.transform(img)
+        img_transform = self.transform(img)    
+        
+        if self.return2views and self.partition == partition.TRAIN:
+            view2 = self.transform(img)
+            return img_transform, view2, torch.tensor(label)
+        
+        return img_transform, torch.tensor(label)
 
-        return img, torch.tensor(label)
-
+def get_loaders(path, path_dn4il, image_size=224, batch_size=32, config=None):
+    # Aixo es pel dino
+    return2views = config['dataset_params'].get('return2views', False)
+    transform_type = config['dataset_params'].get('transform_type', 'default') 
+    domainOrder = config['dataset_params'].get('domain_order', None)
+    buffer_size = config['dataset_params'].get('buffer_size', -1)
+    size_buffer_sample = config['dataset_params'].get('size_buffer_sample', None)
+    print(f"Domain Order: {domainOrder}")
     
-def get_loaders(path, path_dn4il, image_size=224, batch_size=32):
-    train_dataset = DN4IL(path, path_dn4il, partition.TRAIN, image_size=image_size)
-    val_dataset = DN4IL(path, path_dn4il, partition.VALIDATION, image_size=image_size)
-    test_dataset = DN4IL(path, path_dn4il, partition.TEST, image_size=image_size)
+    train_dataset = DN4IL(path, path_dn4il, partition.TRAIN, image_size=image_size, 
+                          return2views = return2views, transform_type=transform_type,
+                          domainOrder=domainOrder, buffer_size=buffer_size, size_buffer_sample=size_buffer_sample)
+    
+    val_dataset = DN4IL(path, path_dn4il, partition.VALIDATION, image_size=image_size, 
+                        return2views = return2views, transform_type=transform_type,
+                        domainOrder=domainOrder)
+    
+    test_dataset = DN4IL(path, path_dn4il, partition.TEST, image_size=image_size,
+                         return2views = return2views, transform_type=transform_type,
+                         domainOrder=domainOrder)
 
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, )
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     return train_loader, val_loader, test_loader
 
+from torchvision.utils import save_image
 
 if __name__ == '__main__':
-    dataset = DN4IL(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', root_dn4il="/fhome/amlai07/Adavanced_DP/Data/DN4IL", partition=partition.TRAIN)
+    return2views = False
+    transform_type = 'default'
+    dataset_buff = DN4IL(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', root_dn4il="/fhome/amlai07/Adavanced_DP/Data/DN4IL", 
+                    partition=partition.TRAIN, return2views = return2views, transform_type=transform_type, buffer_size=150, size_buffer_sample=0.4)
+    dataset = DN4IL(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', root_dn4il="/fhome/amlai07/Adavanced_DP/Data/DN4IL",
+                    partition=partition.TRAIN, return2views = return2views, transform_type=transform_type)
+
     print(dataset.current_domain)
     print(dataset.num_domains)
     print(dataset.num_classes)
     print(len(dataset))
-    dataset.select_domain(1)
-    print(dataset.current_domain)
-    print(dataset[0][1])
-    dataset.next_domain()
-    print(dataset.current_domain)
-    print(dataset.current_domain_idx)
-    print(dataset.idx2domain)
-    print(dataset.domain2idx)
-    #print(dataset[0])
+
+    for i in range(dataset.num_domains):
+        dataset.select_domain(i)
+        dataset_buff.select_domain(i)
+        print("Len Dataset: ", len(dataset))
+        print("Len Dataset with Buffer: ", len(dataset_buff))
+
+    # from torch.utils.data import DataLoader
+    
+    # loader = DataLoader(dataset, batch_size=2, shuffle=True)
+    
+    # s = next(iter(loader))
+    # l = 0
+    
+    # for it in range(dataset.num_domains):
+    #    dataset.select_domain(it)
+    #    s = dataset[0]
+    #    for r, i in enumerate(s[0]):
+    #        save_image(i, f"domain_{it}_test_{r}.png")
+

@@ -1,16 +1,19 @@
 # Teacher Student config only with EWC on student
 
+
 # Dataset configuration
 dataset_params:
   dataset: DN4IL
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  batch_size: 11
+  batch_size: 10
+  domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
 
 # Training configuration
 training_params:
   mean_importances: False
+  Approach: TeacherStudent
   temperature: 5
   scheduler:
     name: StepLR
@@ -19,26 +22,23 @@ training_params:
   criterion: CrossEntropy
   epochs: 10
   early_stopping_patience: -1
-  Approach: DinoTeacherStudent
+
 
 teacher:
-  temperature: 0.07
   model_params: 
     type: baseline_with_ewc
     num_classes: 100
     train_with_ewc: False
     gradient_stop: False
 
-
   training_params:
     optimizer: AdamW
     lr: 0.0001
 
   ewc_params:
-    lambda: 1
+    lambda: 1.85 # (2-lambda) * (CrossEntropy + Distillation) + EWC * lambda
     
 student:
-  temperature: 0.1
   model_params: 
     type: baseline_with_ewc
     num_classes: 100
@@ -50,7 +50,4 @@ student:
     lr: 0.0001
 
   ewc_params:
-    lambda: 1
-  
-  dino_params:
-    update_frequency: 10
+    lambda: 1.85  # (2-lambda) * (CrossEntropy + Distillation) + EWC * lambda

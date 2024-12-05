@@ -1,6 +1,6 @@
 # Model architecture and parameters
 model_params: 
-  type: baseline
+  type: baseline_with_ewc
   num_classes: 100
 
 # Dataset configuration
@@ -9,13 +9,12 @@ dataset_params:
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  # batch_size: 25 # Batch size used for training
-  batch_size: 250 # Batch size used for evaluation
+  batch_size: 25
   domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
+
 
 # Training configuration
 training_params:
-  Approach: TaskArithmetics
   optimizer: AdamW
   lr: 0.0001
   scheduler:
@@ -25,4 +24,6 @@ training_params:
   criterion: CrossEntropy
   epochs: 10
   early_stopping_patience: 4
+  train_with_ewc: False
+  gradient_stop: False
 
