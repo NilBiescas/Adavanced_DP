@@ -1,5 +1,5 @@
 # Teacher Student config only with EWC on student
-
+importances_v2: True
 
 # Dataset configuration
 dataset_params:
@@ -7,13 +7,12 @@ dataset_params:
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
   image_size: 384  
-  batch_size: 10
+  batch_size: 11
   domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
 
 # Training configuration
 training_params:
   mean_importances: False
-  Approach: TeacherStudent
   temperature: 5
   scheduler:
     name: StepLR
@@ -36,7 +35,7 @@ teacher:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1
     
 student:
   model_params: 
@@ -50,4 +49,4 @@ student:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1  # (2-lambda) * (CrossEntropy + Distillation) + EWC * lambda

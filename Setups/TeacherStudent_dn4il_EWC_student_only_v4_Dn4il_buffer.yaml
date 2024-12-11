@@ -9,7 +9,7 @@ dataset_params:
   image_size: 384  
   batch_size: 11
   domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
-  buffer_size: 150
+  buffer_size: 500
   size_buffer_sample: 0.4
 
 # Training configuration
@@ -22,7 +22,7 @@ training_params:
     gamma: 0.5
   criterion: CrossEntropy
   epochs: 10
-  early_stopping_patience: -1
+  early_stopping_patience: 4
 
 
 teacher:

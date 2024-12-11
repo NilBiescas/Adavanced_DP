@@ -1,0 +1,27 @@
+# Model architecture and parameters
+model_params: 
+  type: baseline  # Specify model type (e.g., baseline, teacher-student)
+  num_classes: 100  # Number of output classes
+
+# Dataset configuration
+dataset_params:
+  dataset: DN4IL
+  data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet  # Base data directory
+  path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL  # DN4IL-specific directory
+  image_size: 384  # Image size for transformations
+  batch_size: 25  # Batch size for training/validation/test
+  num_domains: 6
+  all_domains: True
+
+
+# Training configuration
+training_params:
+  optimizer: AdamW  # Optimizer to use (Adam, SGD, etc.)
+  lr: 0.0001  # Learning rate
+  scheduler:  # Scheduler configuration
+    name: StepLR  # Scheduler type (StepLR or ReduceLROnPlateau)
+    step_size: 4  # Step size for StepLR
+    gamma: 0.5  # Gamma for StepLR
+  criterion: CrossEntropy  # Loss function
+  epochs: 10  # Number of training epochs
+  early_stopping_patience: 4  # Early stopping patience (set -1 for no early stopping)

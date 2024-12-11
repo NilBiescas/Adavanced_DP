@@ -13,7 +13,7 @@ dataset_params:
 # Training configuration
 training_params:
   mean_importances: False
-  Approach: TeacherStudent
+  Approach: DomainHeads
   temperature: 5
   scheduler:
     name: StepLR
@@ -36,11 +36,11 @@ teacher:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1
     
 student:
   model_params: 
-    type: baseline_with_ewc
+    type: baseline_with_ewc_DomainHeads
     num_classes: 100
     train_with_ewc: True
     gradient_stop: False
@@ -50,4 +50,4 @@ student:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1

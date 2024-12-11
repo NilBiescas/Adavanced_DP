@@ -12,6 +12,7 @@ from src.Loaders.DataLoaders import get_loaders
 from src.train_loops import train_teacher_student
 from src.train_dino import train_teacher_student_DINO
 from src.train_dino_real import train_teacher_student_DINO_real
+from src.train_loopsDifferenHeads import train_teacher_studentHeads
 
 from src.utils.evaluateFunctions_and_definiOptimizer import define_optimizer
 
@@ -26,11 +27,11 @@ teacher = define_network(config['teacher']["model_params"]).to(device)
 student = define_network(config['student']["model_params"]).to(device)
 
 print(config["dataset_params"]["dataset"])
-if not "dataset" in config["dataset_params"] or config["dataset_params"]["dataset"] == "DomainNet": 
-    from src.Loaders.DataLoaders import get_loaders
-    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["image_size"], config["dataset_params"]["batch_size"])
+#if not "dataset" in config["dataset_params"] or config["dataset_params"]["dataset"] == "DomainNet": 
+#    from src.Loaders.DataLoaders import get_loaders
+#    train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["image_size"], config["dataset_params"]["batch_size"])
 
-elif config["dataset_params"]["dataset"] == "DN4IL":
+if config["dataset_params"]["dataset"] == "DN4IL":
     from src.Loaders.DataLoaders_DN4IL import get_loaders
     train_loader, val_loader, test_loader = get_loaders(config["dataset_params"]["data_path"], config["dataset_params"]["path_dn4il"], config["dataset_params"]["image_size"], 
                                                         config["dataset_params"]["batch_size"], config)
@@ -104,6 +105,20 @@ elif "DinoTeacherStudentReal" == config["training_params"]["Approach"]:
                                 optimizer_student,
                                 criterion, 
                                 device,
+                                scheduler_config=config_scheduler,
+                                Averaging_importances=mean_importances,
+                                config=config)
+    
+elif "DomainHeads" ==  config["training_params"]["Approach"]:
+    optimizer_teacher = define_optimizer(teacher, config['teacher']['training_params'])
+    optimizer_student = define_optimizer(student, config['student']['training_params'])
+
+    teacher, student = train_teacher_studentHeads(teacher,student, 
+                                train_loader, val_loader, test_loader, 
+                                optimizer_teacher, optimizer_student,
+                                criterion, 
+                                device,
+                                epochs=config["training_params"]["epochs"],
                                 scheduler_config=config_scheduler,
                                 Averaging_importances=mean_importances,
                                 config=config)

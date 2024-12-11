@@ -11,12 +11,13 @@ def define_optimizer(model, optimizer_config):
         raise ValueError(f'{optimizer_config["optimizer"]} Optimizer not supported')
     return optimizer
 
+from tqdm import tqdm
 def top1_and_top_k_accuracy_domain(model, loader, device, k=5):
     print("Computing accuracy")
     total = 0
     correct_top1 = 0
     correct_topk = 0
-    for i, (inputs, targets) in enumerate(loader):
+    for i, (inputs, targets) in enumerate(tqdm(loader)):
         inputs = inputs.to(device)
         targets = targets.to(device)
         

@@ -1,3 +1,7 @@
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import sys
 import os
 import yaml
@@ -5,7 +9,7 @@ import wandb
 import torch
 
 from src.Models import define_network
-from src.train_loops import baseline_train, Task_Arithmetics_Train
+from src.train_loops import baseline_train, Task_Arithmetics_Train, BaselineV2
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -71,7 +75,12 @@ if ("Approach" not in config["training_params"]) or ("Baseline" == config["train
     model = baseline_train(model, train_loader, val_loader, test_loader, 
                            optimizer, criterion, device, config["training_params"]["epochs"], 
                            early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
-
+elif "BaselineV2" == config["training_params"]["Approach"]:
+    # Segona versio del baseline que funcionara, al test, 100% 
+    # (Variacio del codi de task arithmetics)
+    print("BaselineV2 Approach")
+    optimizer_config = {"optimizer": config["training_params"]["optimizer"], "lr": config["training_params"]["lr"]}
+    model = BaselineV2(model, train_loader, val_loader, test_loader, optimizer_config, criterion, device, config["training_params"]["epochs"], early_stopping_patience=config["training_params"]["early_stopping_patience"], scheduler_config=config_scheduler)
 elif "TaskArithmetics" == config["training_params"]["Approach"]:
     print("Task Arithmetics Approach")
     optimizer_config = {"optimizer": config["training_params"]["optimizer"], "lr": config["training_params"]["lr"]}

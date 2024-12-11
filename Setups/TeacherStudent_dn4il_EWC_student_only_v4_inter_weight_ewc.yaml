@@ -36,7 +36,7 @@ teacher:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 25
     
 student:
   model_params: 
@@ -50,4 +50,4 @@ student:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 25

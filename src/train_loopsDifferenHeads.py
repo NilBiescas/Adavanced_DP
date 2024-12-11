@@ -3,15 +3,15 @@ from tqdm import tqdm
 import wandb
 import os
 
-from .utils.ewc_functions import compute_importances, add_importances, compute_loss, compute_importances_v2, compute_importances_v3
+from .utils.ewc_functions import compute_importances, add_importances, compute_loss
 from .utils.task_vectors import TaskVector
-import copy
 
 
 # Import plotting functions
 
 from .utils.plotting_functions import plot_strictly_lower_triangular_heatmap, createCSV, plotStablityPlasticity, generate_plot_practica
 from .utils.evaluateFunctions_and_definiOptimizer import define_optimizer, top1_and_top_k_accuracy_domain
+from .Models.baseline_arch import TaskHead
 
 
 def compute_criterion(criterion, model, output, target, domains_trained, alpha=1.0):
@@ -37,8 +37,6 @@ def computeCriterionTeacherStudent(criterion, student, teacher, output_student, 
         loss_teacher = criterion(output_teacher, target)
 
     return loss_student, loss_teacher
-
-    
 
 def baseline_train_epoch(model, train_dataloader, val_dataloder, optimizer, criterion, device, epoch, domains_trained, alpha):
     model.train()
@@ -205,17 +203,7 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
         Domains_trained += 1
         
         if model.train_with_ewc: # Save only if we are using ewc
-            importances_v2 = kwargs.get("importances_v2", False)
-            importances_v3 = kwargs.get("importances_v3", False)
-            if importances_v2:
-                print("Using importances_v2")
-                student_importances = compute_importances_v2(model, val_dataloder, criterion, device)
-            elif importances_v3:
-                print("Using importances_v3")
-                student_importances = compute_importances_v3(model, val_dataloder, criterion, device)
-            else:
-                student_importances = compute_importances(model, val_dataloder, criterion, device)
-
+            student_importances = compute_importances(model, val_dataloder, criterion, device)
             list_task_importances_student.append(student_importances)
             student_importances = add_importances(list_task_importances_student, mean_importances=Averaging_importances)
             model._importances = student_importances
@@ -272,7 +260,7 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
     
 
     
-def train_teacher_student(teacher, student, train_dataloader, val_dataloder, 
+def train_teacher_studentHeads(teacher, student, train_dataloader, val_dataloder, 
                           test_dataloader, optimizer_teacher, optimizer_student, criterion, 
                           device, epochs, early_stopping_patience=5, scheduler_config=None, Averaging_importances=False, config=None):
     
@@ -303,8 +291,12 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
     
     list_task_importances_teacher = []
     list_task_importances_student = []
-     
+    
+    # For Storing the heads
+    domain_heads = []
+    
     for domain in range(num_domains):
+        
         # Seting the current domain to train and validation dataloaders
         train_dataloader.dataset.select_domain(domain)
         val_dataloder.dataset.select_domain(domain)
@@ -332,6 +324,13 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
 
         best_val_loss = float('inf')
         counter = 0
+        # Create a task head for each domain
+        print(f"Creating Head for domain {idx2domain[domain]}")
+        student.model.classifier = TaskHead(input_size = 1280,
+                                            projection_size=640,
+                                            num_classes=100,
+                                            dropout=0.2).to(device)
+        
         for epoch in tqdm(range(epochs)):
             teacher_train_total_loss, student_train_total_loss, val_loss = TeacherStudent_train_epoch(teacher, student, train_dataloader, val_dataloder, 
                                                                                                       optimizer_teacher, optimizer_student, 
@@ -373,44 +372,31 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
         Domains_trained += 1   
         # Calculate the importances for this domain
         if teacher.train_with_ewc:
-            importances_v2 = config.get("importances_v2", False)
-            importances_v3 = config.get("importances_v3", False)
-            if importances_v2:
-                print("Using importances_v2")
-                teacher_importances = compute_importances_v2(student, val_dataloder, criterion, device)
-            elif importances_v3:
-                print("Using importances_v3")
-                teacher_importances = compute_importances_v3(student, val_dataloder, criterion, device)
-            else:
-                teacher_importances = compute_importances(student, val_dataloder, criterion, device)
-
+            # We will compute 
+            teacher_importances = compute_importances(teacher, val_dataloder, criterion, device)
             list_task_importances_teacher.append(teacher_importances)
             teacher_importances = add_importances(list_task_importances_teacher, mean_importances=Averaging_importances) # We sum the importances of all the tasks equally
             teacher._importances = teacher_importances
-            teacher._old_model_state_dict = copy.deepcopy(teacher.state_dict())
+            teacher._old_model_state_dict = teacher.state_dict()
 
         if student.train_with_ewc:
-            importances_v2 = config.get("importances_v2", False)
-            importances_v3 = config.get("importances_v3", False)
-            if importances_v2:
-                print("Using importances_v2")
-                student_importances = compute_importances_v2(student, val_dataloder, criterion, device)
-            elif importances_v3:
-                print("Using importances_v3")
-                student_importances = compute_importances_v3(student, val_dataloder, criterion, device)
-            else:
-                student_importances = compute_importances(student, val_dataloder, criterion, device)
-                
+            # We will compute the importances for all the weights and then pick 
+            student_importances = compute_importances(student, val_dataloder, criterion, device)
             list_task_importances_student.append(student_importances)
             student_importances = add_importances(list_task_importances_student, mean_importances=Averaging_importances)
             student._importances = student_importances
-            student._old_model_state_dict = copy.deepcopy(student.state_dict())
+            student._old_model_state_dict = student.state_dict()
+        
+        # Save the head and set it to eval
+        domain_heads.append(student.model.classifier.eval())
         
         eval_top1_acc = []
         eval_top5_acc = []
 
         for i in range(domain+1):
+            student.model.classifier = domain_heads[i]
             val_dataloder.dataset.select_domain(i)
+            
             val_top1_acc, val_top5_acc = top1_and_top_k_accuracy_domain(student, val_dataloder, device, k=5)
             wandb.log({f"top1_acc_prev_student_{idx2domain[i]}": val_top1_acc, f"top5_acc_prev_student_{idx2domain[i]}": val_top5_acc, "Trained_domains":Domains_trained})
             eval_top1_acc.append(val_top1_acc); eval_top5_acc.append(val_top5_acc)
@@ -419,6 +405,8 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
         test_top5_acc = []
         # Evaluate plasticty
         for i in range(domain +1):
+            student.model.classifier = domain_heads[i]
+            
             test_dataloader.dataset.select_domain(i)
             test_top1_acc_d, test_top5_acc_d = top1_and_top_k_accuracy_domain(student, test_dataloader, device, k=5)
             test_top1_acc.append(test_top1_acc_d.cpu().item()); test_top5_acc.append(test_top5_acc_d.cpu().item())
@@ -436,6 +424,9 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
     result_top5 = []
     # Evaluate stability
     for i in range(num_domains):
+        print("Testing with head")
+        student.model.classifier = domain_heads[i]
+        
         test_dataloader.dataset.select_domain(i)
         test_top1_acc, test_top5_acc = top1_and_top_k_accuracy_domain(student, test_dataloader, device, k=5)
         result_top1.append(test_top1_acc.cpu())

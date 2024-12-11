@@ -6,8 +6,8 @@ dataset_params:
   dataset: DN4IL
   data_path: /fhome/amlai07/Adavanced_DP/Data/domainnet
   path_dn4il: /fhome/amlai07/Adavanced_DP/Data/DN4IL
-  image_size: 384  
-  batch_size: 10
+  image_size: 224  
+  batch_size: 128
   domain_order: ["real", "clipart", "infograph", "painting",  "sketch", "quickdraw"]
 
 # Training configuration
@@ -26,7 +26,7 @@ training_params:
 
 teacher:
   model_params: 
-    type: baseline_with_ewc
+    type: mobilenet_v3_small
     num_classes: 100
     train_with_ewc: False
     gradient_stop: False
@@ -36,11 +36,11 @@ teacher:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1
     
 student:
   model_params: 
-    type: baseline_with_ewc
+    type: mobilenet_v3_small
     num_classes: 100
     train_with_ewc: True
     gradient_stop: False
@@ -50,4 +50,4 @@ student:
     lr: 0.0001
 
   ewc_params:
-    lambda: 50
+    lambda: 1

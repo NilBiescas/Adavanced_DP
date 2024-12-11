@@ -10,7 +10,7 @@ from enum import Enum
 from sklearn.model_selection import train_test_split
 
 from src.Loaders.ClassNames import dn4il_classnames
-# from ClassNames import dn4il_classnames
+#from ClassNames import dn4il_classnames
 
 class partition(Enum):
     TRAIN = 'train'
@@ -297,19 +297,23 @@ class DN4IL(Dataset):
                 self.gen_buffer2use(self.DomainIDX-1)
 
     def __len__(self):
-        if (self.partition != partition.TRAIN) or (self.buffer_size < 1):
-            return len(self.data[self.Domain2Use]["labels"])
+        if (self.partition == partition.TRAIN) and (self.buffer_size > 0):
+            # print("Buffer Size: ", self.buffer_size)
+            buffer_samples = int(self.buffer_size*self.size_buffer_sample) * (self.DomainIDX)
+            # print("Buffer Samples: ", buffer_samples)
+            # print("Len: ", len(self.data[self.Domain2Use]["labels"]) + buffer_samples)
+            return (len(self.data[self.Domain2Use]["labels"]) + buffer_samples)    
+    
+        return len(self.data[self.Domain2Use]["labels"])
         
-        buffer_samples = [len(self.buffer2use[domain]["labels"]) for domain in self.domains[:self.DomainIDX]]
-        return len(self.data[self.Domain2Use]["labels"]) + sum(buffer_samples)
 
     def __getitem__(self, idx):
-        if (self.partition == partition.TRAIN) or (self.buffer_size >= 1):
-            paths = self.data[self.Domain2Use]["paths"]
-            labels = self.data[self.Domain2Use]["labels"]
+        if (self.partition == partition.TRAIN) and (self.buffer_size >= 1) and (idx >= len(self.data[self.Domain2Use]["labels"])):
+            paths = self.data[self.Domain2Use]["paths"].copy()
+            labels = self.data[self.Domain2Use]["labels"].copy()
             for i in range(self.DomainIDX):
-                paths += self.buffer2use[self.domains[i]]["paths"]
-                labels += self.buffer2use[self.domains[i]]["labels"]
+                paths += self.buffer2use[self.domains[i]]["paths"].copy()
+                labels += self.buffer2use[self.domains[i]]["labels"].copy()
         else:
             paths = self.data[self.Domain2Use]["paths"]
             labels = self.data[self.Domain2Use]["labels"]
@@ -325,7 +329,19 @@ class DN4IL(Dataset):
             return img_transform, view2, torch.tensor(label)
         
         return img_transform, torch.tensor(label)
-
+    
+    def sample_domains(self, sample_size):
+        """
+        Reduce the number of samples per domain to the given sample size.
+        """
+        for i in range(self.num_domains):
+            self.select_domain(i)
+            permutation = torch.randperm(len(self.data[self.Domain2Use]["paths"]), generator=torch.Generator().manual_seed(self.seed))
+            idxs = permutation[:sample_size].tolist()
+            self.data[self.Domain2Use]["paths"] = [self.data[self.Domain2Use]["paths"][i] for i in idxs]
+            self.data[self.Domain2Use]["labels"] = [self.data[self.Domain2Use]["labels"][i] for i in idxs]
+            
+            
 def get_loaders(path, path_dn4il, image_size=224, batch_size=32, config=None):
     # Aixo es pel dino
     return2views = config['dataset_params'].get('return2views', False)
@@ -359,7 +375,7 @@ if __name__ == '__main__':
     return2views = False
     transform_type = 'default'
     dataset_buff = DN4IL(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', root_dn4il="/fhome/amlai07/Adavanced_DP/Data/DN4IL", 
-                    partition=partition.TRAIN, return2views = return2views, transform_type=transform_type, buffer_size=150, size_buffer_sample=0.4)
+                    partition=partition.TRAIN, return2views = return2views, transform_type=transform_type, buffer_size=100, size_buffer_sample=0.4)
     dataset = DN4IL(root='/fhome/amlai07/Adavanced_DP/Data/domainnet', root_dn4il="/fhome/amlai07/Adavanced_DP/Data/DN4IL",
                     partition=partition.TRAIN, return2views = return2views, transform_type=transform_type)
 
@@ -368,11 +384,19 @@ if __name__ == '__main__':
     print(dataset.num_classes)
     print(len(dataset))
 
+    datalodaer_normal = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
+    datalodaer_buffer = torch.utils.data.DataLoader(dataset_buff, batch_size=32, shuffle=True)
     for i in range(dataset.num_domains):
         dataset.select_domain(i)
         dataset_buff.select_domain(i)
-        print("Len Dataset: ", len(dataset))
-        print("Len Dataset with Buffer: ", len(dataset_buff))
+        #print("Len Dataset: ", len(dataset))
+        #print("Len Dataset with Buffer: ", len(dataset_buff))
+        r = next(iter(datalodaer_normal))
+        print("Shape normal buffer", r[0].shape)
+        #s = next(iter(datalodaer_buffer))
+        #print(s[0].shape)
+
+        
 
     # from torch.utils.data import DataLoader
     

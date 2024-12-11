@@ -7,7 +7,7 @@ import os
 import wandb
 
 
-def plot_strictly_lower_triangular_heatmap(data: list[list], labels: list, save_path: str):
+def plot_strictly_lower_triangular_heatmap(data: list[list], labels: list, save_path: str, title: str = "Top1 Accuracy"):
     """
     Plots a heatmap showing only the strictly lower triangular part of the matrix (excluding the diagonal).
 
@@ -26,7 +26,7 @@ def plot_strictly_lower_triangular_heatmap(data: list[list], labels: list, save_
     # Plot heatmap
     plt.figure(figsize=(4, 4))  # Adjusted for compact size
     sns.heatmap(df, annot=True, fmt=".1f", cmap="Reds", square=True, cbar=False, linewidths=0.5, mask=mask)
-    plt.title("Top1 Accuracy", fontsize=14)
+    plt.title(title, fontsize=14)
     plt.xticks(rotation=45, ha='right')
     plt.yticks(rotation=0)
     plt.tight_layout()
