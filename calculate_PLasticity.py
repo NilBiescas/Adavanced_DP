@@ -3,7 +3,7 @@ import os
 import yaml
 import pandas as pd
 
-dirpath = "/fhome/amlai07/Adavanced_DP/Runs/TeacherStudent_dn4il_EWC_Teacher_only_v4_Dn4il_domain_order/afterEachdomain_top1_plasticity.csv"
+dirpath = "/fhome/amlai07/Adavanced_DP/Runs/NoTeacher_studentonlyEWC_domainorder/afterEachdomain_top1_plasticity.csv"
 
 with open(dirpath, 'r') as f:
     data = f.read().splitlines()
