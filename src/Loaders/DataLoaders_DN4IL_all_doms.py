@@ -28,7 +28,6 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 
 from src.Loaders.ClassNames import dn4il_classnames
-#from ClassNames import dn4il_classnames
 
 
 class partition(Enum):
@@ -46,19 +45,17 @@ class DN4IL(Dataset):
         self.return2views = return2views
         self.transform_type = transform_type
         self.image_size = image_size
-        self.all_domains = all_domains  # Always True for all-domains training
+        self.all_domains = all_domains
         self.random_state = random_state
         self.validation_size = validation_size
 
         self.idx2class = dn4il_classnames
         self.class2idx = {v: k for k, v in self.idx2class.items()}
 
-        # Initialize domains
         files = os.listdir(self.root)
         domains = [f for f in files if '.' not in f]
         domains.sort()
         if domainOrder is not None:
-            # If a domain order is specified, reorder
             if "real" in domains:
                 domains.remove("real")
                 domains = ["real"] + [d for d in domains if d != "real"]
@@ -67,13 +64,11 @@ class DN4IL(Dataset):
         self.domains = domains
         print(f"Domains: {self.domains}")
 
-        # Initialize lists to hold all data
         self.all_paths = []
         self.all_labels = []
-        self.all_domain_labels = []  # New list to track domain of each sample
+        self.all_domain_labels = []
 
         if self.partition in [partition.TRAIN, partition.VALIDATION]:
-            # Load train/val data and split
             for domain_idx, domain in enumerate(self.domains):
                 domain_txt = os.path.join(self.root_dn4il, domain + '_train.txt')
                 with open(domain_txt, 'r') as f:
@@ -94,7 +89,6 @@ class DN4IL(Dataset):
                     self.all_labels.extend(y_val)
                     self.all_domain_labels.extend([domain_idx] * len(X_val))
         else:
-            # Load test data
             for domain_idx, domain in enumerate(self.domains):
                 domain_txt = os.path.join(self.root_dn4il, domain + '_test.txt')
                 with open(domain_txt, 'r') as f:
@@ -106,7 +100,6 @@ class DN4IL(Dataset):
                 self.all_labels.extend(labels)
                 self.all_domain_labels.extend([domain_idx] * len(paths))
 
-        # Set transforms based on transform_type
         if self.partition in [partition.TRAIN, partition.VALIDATION]:
             if self.transform_type == 'default':
                 self.transform = transforms.Compose([
@@ -132,7 +125,6 @@ class DN4IL(Dataset):
             else:
                 raise ValueError(f"Unknown transform_type {self.transform_type}")
         else:
-            # Test or other partitions (no augmentations)
             self.transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Resize((self.image_size, self.image_size), interpolation=InterpolationMode.BILINEAR),
@@ -158,11 +150,10 @@ class DN4IL(Dataset):
             raise ValueError(f"Image not found: {img_path}")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         label = self.all_labels[idx]
-        domain_label = self.all_domain_labels[idx]  # Domain index
+        domain_label = self.all_domain_labels[idx]
 
         img_transform = self.transform(img)
 
-        # If return2views is True and we are in TRAIN mode, return two augmented views
         if self.return2views and self.partition == partition.TRAIN:
             view2 = self.transform(img)
             return img_transform, view2, torch.tensor(label), torch.tensor(domain_label)
@@ -179,7 +170,6 @@ def get_loaders(path, path_dn4il, image_size=224, batch_size=32, config=None):
     random_state = config['dataset_params'].get('random_state', 42)
     print(f"Domain Order: {domainOrder}")
 
-    # Always load all domains at once
     all_domains = True
 
     train_dataset = DN4IL(path, path_dn4il, partition.TRAIN, image_size=image_size,

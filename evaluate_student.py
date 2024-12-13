@@ -1,8 +1,8 @@
-# import os
+import os
 
-# # Set GPU to use and order of GPUs
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "9"
+# Set GPU to use and order of GPUs
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "8"
 
 import torch
 from src.utils.plotting_functions import generate_plot_practica, createCSV, plotStablityPlasticity, plot_strictly_lower_triangular_heatmap

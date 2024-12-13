@@ -1,0 +1,9 @@
+Method,Stability,Plasticity
+Full Finetunning (Lower B0und),13.62,13.62
+Joint Training (Upper B0und),79.91,
+EWD (Elastic weight Distillation),40.07,80.64
+Task Arithmetics,49.89,55.34
+ER,31.05,54.58
+DER++,41.06,55.46
+CLS-ER,43.45,45.4
+DUCA,49.56,53.98

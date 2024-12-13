@@ -109,6 +109,65 @@ def generate_plot_practica(eval_top1_acc, eval_top5_acc, num_domains, idx2domain
         wandb.log({f'{os.path.basename(save_plot)}' + "_top1": [wandb.Image(top1, caption="Top1 Accuracy")], 
                 f'{os.path.basename(save_plot)}' + "_top5": [wandb.Image(top5, caption="Top5 Accuracy")]})
         
+        
+        
+        
+        
+        
+#methods = ['Full Finetunning (Lower B0und)', 'Joint Training (Upper B0und)', 'EWD (Elastic weight Distillation)', 'Task Arithmetics', 'ER', 'DER++', 'CLS-ER', 'DUCA']
+#stability = [13.62, 79.91, 40.07, 49.89, 31.05, 41.06, 43.45, 49.56]
+#plasticity = [13.62, None, 80.64, 55.34, 54.58, 55.46, 45.4, 53.98]
+#
+#
+## Replace None with 0 for plotting purposes
+#plasticity_fixed = [p if p is not None else 0 for p in plasticity]
+#
+## Plotting side-by-side bars for stability and plasticity
+#fig, ax = plt.subplots(figsize=(12, 6))
+#
+#bar_width = 0.4
+#x = range(len(methods))
+#
+## Bar chart for stability and plasticity
+#ax.bar([i - bar_width / 2 for i in x], stability, bar_width, label="Stability", color="lightblue", edgecolor="black")
+#ax.bar([i + bar_width / 2 for i in x], plasticity_fixed, bar_width, label="Plasticity", color="salmon", edgecolor="black")
+#
+## Labels, legend, and formatting
+#ax.set_xlabel("Method", fontsize=12)
+#ax.set_ylabel("Accuracy", fontsize=12)
+#ax.set_xticks(x)
+#ax.set_xticklabels(methods, rotation=45, ha='right', fontsize=10)
+#ax.legend()
+#plt.tight_layout()
+#plt.savefig("proba.png")
+
+#
+#dirpath = "/fhome/amlai07/Adavanced_DP/Runs/TaskArithmetics_dn4il_40/afterEachdomain_top1_plasticity.csv"
+#
+#
+#
+#with open(dirpath, 'r') as f:
+#    data = f.read().splitlines()
+#    plasticity = 0
+#    test_prev_accs_top1 = []
+#    for idx in range(1, len(data)):
+#        line = data[idx].split(",")
+#        current_line = []
+#        for i in range(1, len(line)):
+#            current_line.append(float(line[i]))
+#        test_prev_accs_top1.append(current_line)
+#
+#    
+#if "__main__" == __name__:
+#    domains = ["real", "clip", "infograph", "paint", "sketch", "qdraw"]
+#    plot_strictly_lower_triangular_heatmap(test_prev_accs_top1, domains, "out.png")
+
+    
+    
+
+
+
+
 #### plotting and accuracy functions:
 #
 ## for this exercise, the training_plot function is able to separate the training curves

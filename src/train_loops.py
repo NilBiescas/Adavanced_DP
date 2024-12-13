@@ -3,7 +3,7 @@ from tqdm import tqdm
 import wandb
 import os
 
-from .utils.ewc_functions import compute_importances, add_importances, compute_loss, compute_importances_v2, compute_importances_v3
+from .utils.ewc_functions import compute_importances, add_importances, compute_loss, compute_importances_v2, compute_importances_v3, recompute_importances
 from .utils.task_vectors import TaskVector
 import copy
 
@@ -212,7 +212,7 @@ def baseline_train(model, train_dataloader, val_dataloder, test_dataloader,
                 student_importances = compute_importances_v2(model, val_dataloder, criterion, device)
             elif importances_v3:
                 print("Using importances_v3")
-                student_importances = compute_importances_v3(model, val_dataloder, criterion, device)
+                student_importances = compute_importances_v3(model, val_dataloder, device)
             else:
                 student_importances = compute_importances(model, val_dataloder, criterion, device)
 
@@ -375,16 +375,21 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
         if teacher.train_with_ewc:
             importances_v2 = config.get("importances_v2", False)
             importances_v3 = config.get("importances_v3", False)
-            if importances_v2:
-                print("Using importances_v2")
-                teacher_importances = compute_importances_v2(student, val_dataloder, criterion, device)
-            elif importances_v3:
-                print("Using importances_v3")
-                teacher_importances = compute_importances_v3(student, val_dataloder, criterion, device)
+            recomputed_importances = config.get("recompute_importances", False)
+            if recomputed_importances:
+                print("Recomputing importances")
+                list_task_importances_teacher = recompute_importances(teacher, val_dataloder, device, domain)
             else:
-                teacher_importances = compute_importances(student, val_dataloder, criterion, device)
-
-            list_task_importances_teacher.append(teacher_importances)
+                if importances_v2:
+                    print("Using importances_v2")
+                    teacher_importances = compute_importances_v2(teacher, val_dataloder, criterion, device)
+                elif importances_v3:
+                    print("Using importances_v3")
+                    teacher_importances = compute_importances_v3(teacher, val_dataloder, device)
+                else:
+                    teacher_importances = compute_importances(teacher, val_dataloder, criterion, device)
+                list_task_importances_teacher.append(teacher_importances)
+            
             teacher_importances = add_importances(list_task_importances_teacher, mean_importances=Averaging_importances) # We sum the importances of all the tasks equally
             teacher._importances = teacher_importances
             teacher._old_model_state_dict = copy.deepcopy(teacher.state_dict())
@@ -392,16 +397,24 @@ def train_teacher_student(teacher, student, train_dataloader, val_dataloder,
         if student.train_with_ewc:
             importances_v2 = config.get("importances_v2", False)
             importances_v3 = config.get("importances_v3", False)
-            if importances_v2:
-                print("Using importances_v2")
-                student_importances = compute_importances_v2(student, val_dataloder, criterion, device)
-            elif importances_v3:
-                print("Using importances_v3")
-                student_importances = compute_importances_v3(student, val_dataloder, criterion, device)
+            recomputed_importances = config.get("recompute_importances", False)
+            if recomputed_importances:
+                print("Recomputing importances")
+                list_task_importances_student = recompute_importances(student, val_dataloder, device, domain)
             else:
-                student_importances = compute_importances(student, val_dataloder, criterion, device)
+                if importances_v2:
+                    print("Using importances_v2")
+                    student_importances = compute_importances_v2(student, val_dataloder, criterion, device)
+                elif importances_v3:
+                    print("Using importances_v3")
+                    student_importances = compute_importances_v3(student, val_dataloder, device)
+                else:
+                    student_importances = compute_importances(student, val_dataloder, criterion, device)
+                list_task_importances_student.append(student_importances)
                 
-            list_task_importances_student.append(student_importances)
+                list_task_importances_student.append(student_importances)
+            
+            print(len(list_task_importances_student))
             student_importances = add_importances(list_task_importances_student, mean_importances=Averaging_importances)
             student._importances = student_importances
             student._old_model_state_dict = copy.deepcopy(student.state_dict())

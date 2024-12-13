@@ -32,6 +32,10 @@ def add_importances(list_task_importances, mean_importances=False):
 
 
 def compute_importances(model, data_loader, criterion, device):
+    """
+    Compute the importance of each parameter in the model, 
+    Using an aproximation of the fisher information matrix with cross entropy loss.
+    """
     model.eval()
     model.zero_grad()
     importances = {}
@@ -57,6 +61,10 @@ def compute_importances(model, data_loader, criterion, device):
 
 
 def compute_importances_v2(model, data_loader, criterion, device):
+    """
+    Compute the importance of each parameter in the model, 
+    Using an aproximation of the fisher information matrix with cross entropy loss.
+    """
     model.eval()
     model.zero_grad()
     importances = {}
@@ -78,7 +86,10 @@ def compute_importances_v2(model, data_loader, criterion, device):
 
     return importances
 
-def compute_importances_v3(model, data_loader, criterion, device):
+def compute_importances_v3(model, data_loader, device):
+    """
+    Compute the importance of each parameter in the model, Using the fisher information matrix.
+    """
     model.eval()
     model.zero_grad()
     importances = {}
@@ -98,3 +109,18 @@ def compute_importances_v3(model, data_loader, criterion, device):
         model.zero_grad()
 
     return importances
+
+
+def recompute_importances(model, data_loader, device, domains):
+    """
+    Recompute importances for all the previous domain given the current model.
+    It uses the fisher information matrix.
+    """
+    model.eval()
+    list_importances = []
+    for i in range(domains+1):
+        data_loader.dataset.select_domain(i)
+        importances = compute_importances_v3(model, data_loader, device)
+        list_importances.append(importances)
+    
+    return list_importances
