@@ -30,8 +30,9 @@ if __name__ == "__main__":
 
     name_yaml = sys.argv[1]
     config = yaml.load(open(f"Setups/{name_yaml}.yaml", "r"), Loader=yaml.FullLoader)
+    num_samples = 40
 
-    name_yaml_plots = name_yaml + "_40"
+    name_yaml_plots = name_yaml + "" if num_samples == 150 else f"_{num_samples}"
 
     print(config["dataset_params"]["dataset"])
     if not "dataset" in config["dataset_params"] or config["dataset_params"]["dataset"] == "DomainNet": 
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     num_domains = val_loader.dataset.num_domains
 
     # Make a sample of 150 images per domain at the validation set
-    val_loader.dataset.sample_domains(40)
+    val_loader.dataset.sample_domains(num_samples)
 
     test_prev_accs_top1 = []
     test_prev_accs_top5 = []
